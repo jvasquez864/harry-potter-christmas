@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import Collider from '../@core/Collider';
 import GameObject from '../@core/GameObject';
 import Interactable from '../@core/Interactable';
@@ -8,11 +8,12 @@ import TileMap, { TileMapResolver } from '../@core/TileMap';
 import { mapDataString } from '../@core/utils/mapUtils';
 import Player from '../entities/Player';
 import spriteData from '../spriteData';
+import ZombiePlant from '../entities/ZombiePlant';
 
 const mapData = mapDataString(`
 # # # # # #
 # · · · · #
-· · · · · #
+· · Z · · #
 # · · · · #
 # # # # # #
 `);
@@ -21,12 +22,21 @@ const resolveMapTile: TileMapResolver = (type, x, y) => {
     const key = `${x}-${y}`;
     const position = { x, y };
 
+    const floor = (
+        <GameObject key={key} {...position} layer="ground">
+            <Sprite {...spriteData.objects} state="floor" />
+        </GameObject>
+    );
+
     switch (type) {
         case '·':
+            return floor;
+        case 'Z':
             return (
-                <GameObject key={key} {...position} layer="ground">
-                    <Sprite {...spriteData.objects} state="floor" />
-                </GameObject>
+                <Fragment key={key}>
+                    {floor}
+                    <ZombiePlant {...position} />
+                </Fragment>
             );
         case '#':
             return (
