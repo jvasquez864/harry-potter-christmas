@@ -46,6 +46,7 @@ export function useSound({ src, loop = false, volume = 1, onStop }: SoundProps) 
         if (canPlayAudio) {
             // catch possible abort error.
             // see: https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             instance.play().catch(() => {});
         }
     }, [instance]);
