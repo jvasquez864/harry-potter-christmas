@@ -51,7 +51,7 @@ export function mapDataString(str: string): TileMapData {
         string = string.slice(0, -1);
     }
     for (const char of string) {
-        if (char === ' ') continue;
+        // if (char === ' ') continue;
         if (char === lineBreak) {
             data[++line] = [];
         } else {

@@ -38,5 +38,17 @@ export default function TileMap({ data, resolver, definesMapSize = false }: Prop
 
     if (!resolver) return null;
 
-    return <>{mapData.map((row, y) => row.map((type, x) => resolver(type, x, y)))}</>;
+    return (
+        <>
+            {mapData.map((row, y) => {
+                // row.map((type, x) => resolver(`${type}${row[x + 1] || ' '}`, x, y))
+                const res = [];
+                for (let x = 0; x < row.length; x += 2) {
+                    const type = row.slice(x, x + 2).join('');
+                    res.push(resolver(type, x / 2, y));
+                }
+                return res;
+            })}
+        </>
+    );
 }

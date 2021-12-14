@@ -1,4 +1,5 @@
 import React from 'react';
+import DialogScript from '../components/DialogScript';
 import Collider from '../@core/Collider';
 import GameObject, { GameObjectProps } from '../@core/GameObject';
 import Interactable from '../@core/Interactable';
@@ -20,6 +21,7 @@ export default function Player(props: GameObjectProps) {
             </CharacterScript>
             <CameraFollowScript />
             <PlayerScript />
+            <DialogScript />
         </GameObject>
     );
 }

@@ -1,7 +1,11 @@
 import { css, Global } from '@emotion/core';
 import React from 'react';
+import { useThree } from 'react-three-fiber';
 import AssetLoader from './@core/AssetLoader';
+import DialogOverlay from './@core/DialogOverlay';
 import Game from './@core/Game';
+import GameUi from './@core/GameUi';
+import HtmlOverlay from './@core/HtmlOverlay';
 import Scene from './@core/Scene';
 import SceneManager from './@core/SceneManager';
 import useWindowSize from './@core/useWindowSize';
@@ -44,6 +48,7 @@ export default function App() {
                                 <OtherScene />
                             </Scene>
                         </SceneManager>
+                        <DialogOverlay>hello</DialogOverlay>
                     </AssetLoader>
                 </Game>
             </div>

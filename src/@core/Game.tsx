@@ -1,6 +1,14 @@
 import { css } from '@emotion/core';
-import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import React, {
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { Canvas } from 'react-three-fiber';
+import { DialogInfo } from '../components/DialogScript';
 import { GameObjectLayer, GameObjectRef } from './GameObject';
 import { SceneExitEvent } from './Scene';
 import createPubSub, { PubSub } from './utils/createPubSub';
@@ -24,6 +32,11 @@ export interface GameContextValue extends GameObjectRegistryUtils, PubSub {
     };
     paused: boolean;
     setPaused: Dispatch<SetStateAction<boolean>>;
+    isDialogOpen: boolean;
+    currentDialogPageIndex: number;
+    openDialog: (info: DialogInfo) => void;
+    advanceDialogPage: () => void;
+    dialogInfo: DialogInfo;
     mapSize: [number, number];
     setMapSize: Dispatch<SetStateAction<[number, number]>>;
     setGameState: (key: string | symbol, value: any) => void;
@@ -51,6 +64,9 @@ export default function Game({
     children,
 }: Props) {
     const [paused, setPaused] = useState(false);
+    const [isDialogOpen, setDialogOpen] = useState(false);
+    const [currentDialogPageIndex, setCurrentDialogPageIndex] = useState(0);
+    const [dialogInfo, setDialogInfo] = useState<DialogInfo>({} as DialogInfo);
     const [mapSize, setMapSize] = useState<[number, number]>(() => [1, 1]);
     const [registryById] = useState<GameObjectRegistry>(() => new Map());
     const [registryByName] = useState<GameObjectRegistry>(() => new Map());
@@ -130,6 +146,22 @@ export default function Game({
         [registryById, registryByLayer, registryByName, registryByXY]
     );
 
+    const advanceDialogPage = useCallback(() => {
+        if (currentDialogPageIndex + 1 < dialogInfo.dialog.length) {
+            setCurrentDialogPageIndex(currentDialogPageIndex + 1);
+            return;
+        }
+        setDialogOpen(false);
+        setDialogInfo({} as DialogInfo);
+        setCurrentDialogPageIndex(0);
+    }, [currentDialogPageIndex, dialogInfo]);
+
+    const openDialog = useCallback((info: DialogInfo) => {
+        setDialogInfo(info);
+        setCurrentDialogPageIndex(0);
+        setDialogOpen(true);
+    }, []);
+
     const contextValue: GameContextValue = {
         settings: {
             movementDuration,
@@ -137,6 +169,11 @@ export default function Game({
         },
         paused,
         setPaused,
+        isDialogOpen,
+        openDialog,
+        currentDialogPageIndex,
+        advanceDialogPage,
+        dialogInfo,
         mapSize,
         setMapSize,
         ...storeUtils,

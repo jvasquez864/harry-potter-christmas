@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import useGame from '../@core/useGame';
 import { Position } from '../@core/GameObject';
 import { InteractableRef } from '../@core/Interactable';
 import { MoveableRef } from '../@core/Moveable';
@@ -14,6 +15,7 @@ import PlayerPathOverlay from './PlayerPathOverlay';
 
 export default function PlayerScript() {
     const { getComponent, transform } = useGameObject();
+    const { isDialogOpen } = useGame();
     const testCollision = useCollisionTest();
     const findPath = usePathfinding();
     const [path, setPath] = useState<Position[]>([]);
@@ -26,6 +28,8 @@ export default function PlayerScript() {
     const downKey = useKeyPress(['ArrowDown', 's']);
 
     useGameLoop(() => {
+        // console.log(rightKey);
+        if (isDialogOpen) return;
         const direction = {
             x: -Number(leftKey) + Number(rightKey),
             y: Number(upKey) - Number(downKey),
@@ -56,9 +60,19 @@ export default function PlayerScript() {
     const pointer = usePointer();
 
     usePointerClick(event => {
+        if (isDialogOpen) return;
         if (event.button === 0) {
             try {
                 const nextPath = findPath({ to: pointer });
+                // Try interaction on last th
+                (async () => {
+                    const [nextPosition] = nextPath;
+                    nextPath.length === 1 && // try interaction on last step of path
+                        (await getComponent<InteractableRef>('Interactable')?.interact(
+                            nextPosition
+                        ));
+                })();
+
                 if (path.length > 0) {
                     nextPath.unshift(transform);
                 }
@@ -78,13 +92,9 @@ export default function PlayerScript() {
         const [nextPosition] = path;
 
         (async () => {
-            const anyAction =
-                (await getComponent<MoveableRef>('Moveable')?.move(nextPosition)) ||
-                (path.length === 1 && // try interaction on last step of path
-                    (await getComponent<InteractableRef>('Interactable')?.interact(
-                        nextPosition
-                    )));
-
+            const anyAction = await getComponent<MoveableRef>('Moveable')?.move(
+                nextPosition
+            );
             if (anyAction) {
                 // proceed with next step in path
                 setPath(current => current.slice(1));
