@@ -1,9 +1,9 @@
 import { keyframes } from '@emotion/core';
 import css from '@emotion/css';
 
-export default function dialog() {
+export default function dialog(width: number) {
     return css`
-        width: 800px;
+        width: ${width}px;
         height: 300px;
         background-color: #feff9c;
         padding: 16px;
