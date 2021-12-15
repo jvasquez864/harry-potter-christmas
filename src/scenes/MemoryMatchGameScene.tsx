@@ -20,7 +20,7 @@ const mapData = mapDataString(`
 | | | | | | | | | | | | | | | | |
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
-| 0 0 X 0 0 0 0 T 0 0 0 B 0 0 0 1
+| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
@@ -28,7 +28,7 @@ const mapData = mapDataString(`
 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
 `);
 
-export default function SpellCastingGameScene() {
+export default function MemoryMatchGameScene() {
     const { openDialog, setGameState } = useGame();
     const { setScene } = useSceneManager();
     const [isMiniGameStarted, setIsMiniGameStarted] = useState(false);
@@ -36,14 +36,14 @@ export default function SpellCastingGameScene() {
     const onGameEnd = useCallback(
         (didWin: boolean) => {
             setIsMiniGameStarted(false);
-            setGameState('memoryMatchWin', didWin);
+            setGameState('memoryWin', didWin);
             setScene('hogwarts');
         },
         [setGameState, setScene]
     );
-    // useGameEvent<SceneReadyEvent>('scene-ready', () => {
-    //     openDialog({ ...dialogs.intro, onClose: () => setIsMiniGameStarted(true) });
-    // });
+    useGameEvent<SceneReadyEvent>('scene-ready', () => {
+        openDialog({ ...dialogs.intro, onClose: () => setIsMiniGameStarted(true) });
+    });
     return (
         <>
             <GameObject name="map">
@@ -51,17 +51,18 @@ export default function SpellCastingGameScene() {
                 <TileMap data={mapData} resolver={resolveMapTile} definesMapSize />
             </GameObject>
 
-            <GameObject x={8} y={0}>
+            <GameObject x={8} y={4}>
                 <Collider />
                 <Interactable />
                 <ScenePortal
                     name="start"
-                    enterDirection={[0, 1]}
-                    target="hogwarts/spellcastingEnter"
+                    enterDirection={[0, -1]}
+                    target="hogwarts/memoryMatchEnter"
                 />
             </GameObject>
+            <MemoryMatchOverlay isOpen={isMiniGameStarted} onGameEnd={onGameEnd} />
 
-            <Player x={2} y={5} />
+            <Player canWalk={false} x={4} y={4} />
         </>
     );
 }

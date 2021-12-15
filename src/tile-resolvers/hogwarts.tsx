@@ -13,6 +13,8 @@ import Mantle from '../entities/Mantle';
 import Sword from '../entities/Sword';
 import spriteData from '../spriteData';
 import Sprite from '../@core/Sprite';
+import Lantern from '../entities/Lantern';
+import Stump from '../entities/Stump';
 
 export default function resolveMapTile(type, x, y) {
     const key = `${x}-${y}`;
@@ -150,6 +152,26 @@ export default function resolveMapTile(type, x, y) {
                         <Sprite {...spriteData.objects} state="grass1" />
                     </GameObject>
                     <Barrel {...position} />
+                </Fragment>
+            );
+        case 'T': // Lantern
+            return (
+                <Fragment>
+                    <GameObject key={key} {...position} layer="wall">
+                        <Collider />
+                        <Sprite {...spriteData.objects} state="grass1" />
+                    </GameObject>
+                    <Lantern {...position} />
+                </Fragment>
+            );
+        case 'X': // Stump
+            return (
+                <Fragment>
+                    <GameObject key={key} {...position} layer="wall">
+                        <Collider />
+                        <Sprite {...spriteData.objects} state="grass1" />
+                    </GameObject>
+                    <Stump {...position} />
                 </Fragment>
             );
         case 'M': // Mantle

@@ -48,6 +48,7 @@ export default function HogwartsScene() {
     const state = getGameState('hogwarts') || {};
     const { x, y } = state.position || { x: 1, y: 14 };
     const isGate1Open = state['gate-g0-open'];
+    const isGate2Open = state['gate-g1-open'];
     return (
         <>
             <GameObject name="map">
@@ -60,9 +61,20 @@ export default function HogwartsScene() {
                     <Collider />
                     <Interactable />
                     <ScenePortal
-                        name="spellCastingEnter"
+                        name="memoryMatchEnter"
                         enterDirection={[0, -1]}
-                        target="spellCasting/start"
+                        target="memoryMatch/start"
+                    />
+                </GameObject>
+            )}
+            {isGate2Open && (
+                <GameObject x={8} y={15}>
+                    <Collider />
+                    <Interactable />
+                    <ScenePortal
+                        name="spellcastingEnter"
+                        enterDirection={[0, -1]}
+                        target="spellcasting/start"
                     />
                 </GameObject>
             )}

@@ -112,6 +112,9 @@ const spriteData: { [index: string]: SpriteProps } = {
             'castle-gate-open-8': [[15, 12]],
             'castle-gate-wall': [[7, 10]],
             'castle-gate-wall-foot': [[7, 9]],
+            lantern: [[4, 8]],
+            stump: [[0, 7]],
+            'dead-grass': [[4, 3]],
         },
     },
     footstep: {
