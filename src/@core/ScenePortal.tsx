@@ -95,7 +95,7 @@ export default function ScenePortal({
 
             portedObj
                 .getComponent<MoveableRef>('Moveable')
-                .move({ x: transform.x + enterX, y: transform.y + enterY });
+                ?.move({ x: transform.x + enterX, y: transform.y + enterY });
 
             // reset game state
             setGameState(targetPortalKey, null);

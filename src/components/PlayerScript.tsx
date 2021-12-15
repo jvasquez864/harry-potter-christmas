@@ -13,7 +13,10 @@ import usePointerClick from '../@core/usePointerClick';
 import tileUtils from '../@core/utils/tileUtils';
 import PlayerPathOverlay from './PlayerPathOverlay';
 
-export default function PlayerScript() {
+interface PlayerProps {
+    canWalk: boolean;
+}
+export default function PlayerScript({ canWalk }: PlayerProps) {
     const { getComponent, transform } = useGameObject();
     const { isDialogOpen } = useGame();
     const testCollision = useCollisionTest();
@@ -28,8 +31,7 @@ export default function PlayerScript() {
     const downKey = useKeyPress(['ArrowDown', 's']);
 
     useGameLoop(() => {
-        // console.log(rightKey);
-        if (isDialogOpen) return;
+        if (isDialogOpen || !canWalk) return;
         const direction = {
             x: -Number(leftKey) + Number(rightKey),
             y: Number(upKey) - Number(downKey),
@@ -39,7 +41,7 @@ export default function PlayerScript() {
         if (tileUtils(nextPosition).equals(transform)) return;
 
         // is already moving?
-        if (!getComponent<MoveableRef>('Moveable').canMove()) return;
+        if (!getComponent<MoveableRef>('Moveable')?.canMove()) return;
 
         // will cut corner?
         const horizontal = { ...transform, x: nextPosition.x };
@@ -60,7 +62,7 @@ export default function PlayerScript() {
     const pointer = usePointer();
 
     usePointerClick(event => {
-        if (isDialogOpen) return;
+        if (isDialogOpen || !canWalk) return;
         if (event.button === 0) {
             try {
                 const nextPath = findPath({ to: pointer });
@@ -87,7 +89,7 @@ export default function PlayerScript() {
 
     // walk the path
     useEffect(() => {
-        if (!path.length) return;
+        if (!path.length || !canWalk) return;
 
         const [nextPosition] = path;
 

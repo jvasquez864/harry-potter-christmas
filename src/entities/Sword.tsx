@@ -12,15 +12,15 @@ import spriteData from '../spriteData';
 function SwordScript() {
     const { openDialog } = useGame();
 
-    useGameObjectEvent<InteractionEvent>('interaction', () => {
-        openDialog({
-            character: 'harry',
-            dialog: [
-                'You hear a strange sound from this weapon.',
-                'Perhaps there is something within the walls',
-            ],
-        });
-    });
+    // useGameObjectEvent<InteractionEvent>('interaction', () => {
+    //     openDialog({
+    //         character: 'harry',
+    //         dialog: [
+    //             'You hear a strange sound from this weapon.',
+    //             'Perhaps there is something within the walls',
+    //         ],
+    //     });
+    // });
 
     return null;
 }

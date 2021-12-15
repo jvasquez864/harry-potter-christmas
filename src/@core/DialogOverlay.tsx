@@ -17,13 +17,14 @@ export default function DialogOverlay({ children, ...props }: HTMLProps) {
     const node = useRef<HTMLDivElement>();
     const { camera } = useThree();
     const [width] = useWindowSize();
-    const img = useAsset(`${dialogInfo.character}.png`);
 
     if (paused || !isDialogOpen) return null;
 
     const viewport = new THREE.Vector3(1, 1).unproject(camera).sub(camera.position);
     const { x, y } = camera.position;
 
+    const { character, text } = dialogInfo.dialog[currentDialogPageIndex];
+    const isHarry = character === 'harry';
     return (
         <HTML
             position={[x - viewport.x * 0.9, y - viewport.y * 0.1, 11]}
@@ -31,9 +32,13 @@ export default function DialogOverlay({ children, ...props }: HTMLProps) {
             {...props}
         >
             <div css={dialog(width * 0.9)}>
-                <img css={characterImage()} src="./assets/harry.png" alt="Character" />
-                <div css={dialogText()}>{dialogInfo.dialog[currentDialogPageIndex]}</div>
-                <div css={flashingArrow()} />
+                <img
+                    css={characterImage(isHarry)}
+                    src={`./assets/${character}.png`}
+                    alt="Character"
+                />
+                <div css={dialogText()}>{text}</div>
+                <div css={flashingArrow(isHarry)} />
             </div>
         </HTML>
     );

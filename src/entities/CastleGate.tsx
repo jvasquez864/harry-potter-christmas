@@ -3,44 +3,40 @@ import useGame from '../@core/useGame';
 import Collider from '../@core/Collider';
 import GameObject, { GameObjectProps } from '../@core/GameObject';
 import Interactable, { InteractionEvent } from '../@core/Interactable';
-import Sprite, { SpriteRef } from '../@core/Sprite';
-import useGameObject from '../@core/useGameObject';
+import Sprite from '../@core/Sprite';
 import useGameObjectEvent from '../@core/useGameObjectEvent';
-import waitForMs from '../@core/utils/waitForMs';
 import spriteData from '../spriteData';
 import { DialogInfo } from '../components/DialogScript';
-import { TileMapUpdateEvent } from '../@core/TileMap';
-import useSceneManager from '../@core/useSceneManager';
 
 interface CastleGateScriptProps extends CastleGateProps {
     isOpen: boolean;
-    updateIsOpen: (val: boolean) => void;
 }
 
-function CastleGateScript({ dialog, isOpen, updateIsOpen }: CastleGateScriptProps) {
-    const { openDialog, publish, setGameState, isDialogOpen } = useGame();
-    const { resetScene } = useSceneManager();
-    const { getComponent } = useGameObject();
+function CastleGateScript({ dialog, isOpen, gateKey }: CastleGateScriptProps) {
+    const { openDialog, setGameState } = useGame();
 
     useGameObjectEvent<InteractionEvent>('interaction', other => {
+        const gateID = `gate-${gateKey}`;
         if (!isOpen) {
-            if (other.inventory.includes('gate-1-key')) {
-                updateIsOpen(true);
+            if (other.inventory.includes(`${gateID}-key`) || true) {
                 openDialog({
-                    character: 'harry',
                     dialog: [
-                        'You slide the key in and the gate finally opens!',
-                        '"Bloody hell, what\'s that sound?  Why do I always end up in these situations...  Let me get my robe before I go in."',
+                        {
+                            text: 'You slide the key in and the gate finally opens!',
+                            character: 'harry',
+                        },
+                        {
+                            text:
+                                '"Bloody hell, what\'s that sound?  Why do I always end up in these situations...  Let me get my robe before I go in."',
+                            character: 'harry',
+                        },
                     ],
-                    onClose: () => {
-                        resetScene();
-                    },
                 });
 
                 // TODO:isolate gaet-1 from other gates too.
                 // (need to do this anyway to get the right dialogs)
-                const { x, y } = other.transform;
-                setGameState('hogwarts', { 'gate-1-open': true, position: { x, y } });
+                const key = `${gateID}-open`;
+                setGameState('hogwarts', { [key]: true });
             } else {
                 openDialog(dialog);
             }
@@ -51,12 +47,13 @@ function CastleGateScript({ dialog, isOpen, updateIsOpen }: CastleGateScriptProp
 
 interface CastleGateProps extends GameObjectProps {
     dialog: DialogInfo;
+    gateKey: string;
 }
-export default function CastleGate({ x, y, dialog, ...props }: CastleGateProps) {
+export default function CastleGate({ x, y, dialog, gateKey, ...props }: CastleGateProps) {
     const { getGameState } = useGame();
     const [rows, columns] = [3, 3];
     const hogwartsState = getGameState('hogwarts') || {};
-    const [isOpen, setIsOpen] = useState(hogwartsState['gate-1-open']);
+    const isOpen = hogwartsState[`gate-${gateKey}-open`];
     return (
         <Fragment>
             {[...Array(rows)].map((_, yOffset) =>
@@ -67,7 +64,7 @@ export default function CastleGate({ x, y, dialog, ...props }: CastleGateProps) 
                         : `castle-gate-${tileVariantNumber}`;
                     return (
                         <GameObject
-                            key={`gate-${xOffset}-${yOffset}`}
+                            key={spritePath}
                             x={x + xOffset}
                             y={y + yOffset}
                             {...props}
@@ -78,7 +75,7 @@ export default function CastleGate({ x, y, dialog, ...props }: CastleGateProps) 
                             <Interactable />
                             <CastleGateScript
                                 isOpen={isOpen}
-                                updateIsOpen={setIsOpen}
+                                gateKey={gateKey}
                                 dialog={dialog}
                             />
                         </GameObject>

@@ -10,18 +10,25 @@ import CharacterScript from '../components/CharacterScript';
 import PlayerScript from '../components/PlayerScript';
 import spriteData from '../spriteData';
 
-export default function Player(props: GameObjectProps) {
+interface PlayerProps extends GameObjectProps {
+    canWalk?: boolean;
+}
+export default function Player({ canWalk, ...props }: PlayerProps) {
     return (
         <GameObject name="player" displayName="Player" layer="character" {...props}>
-            <Moveable />
+            {canWalk && <Moveable />}
             <Interactable />
             <Collider />
             <CharacterScript>
                 <Sprite {...spriteData.player} />
             </CharacterScript>
             <CameraFollowScript />
-            <PlayerScript />
+            <PlayerScript canWalk={canWalk} />
             <DialogScript />
         </GameObject>
     );
 }
+
+Player.defaultProps = {
+    canWalk: true,
+};

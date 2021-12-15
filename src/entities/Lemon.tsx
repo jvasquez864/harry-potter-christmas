@@ -11,30 +11,37 @@ import useGameObjectEvent from '../@core/useGameObjectEvent';
 import waitForMs from '../@core/utils/waitForMs';
 import spriteData from '../spriteData';
 
-const itemName = 'gate-1-key';
+const itemName = 'gate-g0-key';
 function LemonScript() {
     const { openDialog } = useGame();
-    const [hasCollectedLemons, setHasCollectedLemons] = useState(false);
     const playSfx = useSound(soundData.eating);
-    const dialog = hasCollectedLemons
-        ? ['When life gives you lemons, make lemonade.']
-        : [
-              'The lemons have a delightfully strong smell. Wait.  What is that?',
-              'You lean in closer and pick up a key.\n "This might come in handy later."',
-          ];
+
     useGameObjectEvent<InteractionEvent>('interaction', other => {
+        const hasCollectedKey = other.inventory.includes(itemName);
+        const dialog = hasCollectedKey
+            ? [{ text: 'When life gives you lemons, make lemonade.', character: 'harry' }]
+            : [
+                  {
+                      text:
+                          'The lemons have a delightfully strong smell. Wait.  What is that?',
+                      character: 'harry',
+                  },
+
+                  {
+                      text:
+                          'You lean in closer and pick up a key.\n "This might come in handy later."',
+                      character: 'harry',
+                  },
+              ];
         openDialog({
-            character: 'harry',
             dialog,
             onClose: () => {
-                playSfx();
+                if (!hasCollectedKey) {
+                    other.updateInventory([...other.inventory, itemName]);
+                    playSfx();
+                }
             },
         });
-
-        if (!other.inventory.includes(itemName)) {
-            other.updateInventory([...other.inventory, itemName]);
-            setHasCollectedLemons(true);
-        }
     });
 
     // useGameObjectEvent<TriggerEvent>('trigger', other => {

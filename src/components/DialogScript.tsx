@@ -4,8 +4,10 @@ import useKeyPress from '../@core/useKeyPress';
 import usePointerClick from '../@core/usePointerClick';
 
 export interface DialogInfo {
-    character: string;
-    dialog: string[];
+    dialog: {
+        character: string;
+        text: string;
+    }[];
     onClose?: () => void;
 }
 

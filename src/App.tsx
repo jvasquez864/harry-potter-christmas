@@ -11,6 +11,7 @@ import SceneManager from './@core/SceneManager';
 import useWindowSize from './@core/useWindowSize';
 import HogwartsScene from './scenes/HogwartsScene';
 import OtherScene from './scenes/OtherScene';
+import SpellCastingGameScene from './scenes/SpellCastingGameScene';
 import soundData from './soundData';
 import spriteData from './spriteData';
 import globalStyles from './styles/global';
@@ -43,6 +44,9 @@ export default function App() {
                         <SceneManager defaultScene="hogwarts">
                             <Scene id="hogwarts">
                                 <HogwartsScene />
+                            </Scene>
+                            <Scene id="spellCasting">
+                                <SpellCastingGameScene />
                             </Scene>
                             <Scene id="other">
                                 <OtherScene />
