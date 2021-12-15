@@ -3,14 +3,29 @@ import css from '@emotion/css';
 
 export default function dialog(width: number) {
     return css`
+        display: flex;
+        flex-direction: row;
         width: ${width}px;
         height: 300px;
         background-color: #feff9c;
         padding: 16px;
-        opacity: 0.75;
+        font-family: cursive;
+        font-size: 24px;
         color: black;
+        background: url('./assets/parchment.jpg');
+        background-size: cover;
+        border-top-right-radius: 20px;
+        border-top-left-radius: 20px;
     `;
 }
+
+export const dialogText = () => {
+    return css`
+        padding-top: 20px;
+        padding-left: 250px;
+        padding-right: 20px;
+    `;
+};
 
 const flashKeyframe = keyframes`
   0% {
@@ -42,7 +57,16 @@ export const flashingArrow = () => css`
     height: 6px;
     transform: rotate(-45deg);
     position: absolute;
-    right: 16px;
+    right: 50px;
     bottom: 16px;
     animation: ${flashKeyframe} 1.5s ease infinite;
+`;
+
+export const characterImage = () => css`
+    width: 200px;
+    height: 425px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin-top: -100px;
 `;

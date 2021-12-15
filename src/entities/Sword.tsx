@@ -16,7 +16,7 @@ function SwordScript() {
         openDialog({
             character: 'harry',
             dialog: [
-                'You hear a strange sound from this weapon',
+                'You hear a strange sound from this weapon.',
                 'Perhaps there is something within the walls',
             ],
         });

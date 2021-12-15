@@ -1,6 +1,7 @@
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from 'react-three-fiber';
+import useGame from '../@core/useGame';
 import Crate from '../entities/Crate';
 import Collider from '../@core/Collider';
 import GameObject from '../@core/GameObject';
@@ -17,10 +18,18 @@ import Sword from '../entities/Sword';
 // import Roboto from '../assets/fonts/roboto.json';
 import HtmlOverlay from '../@core/HtmlOverlay';
 import { Box, Plane, Text } from 'drei';
+import CastleGate from '../entities/CastleGate';
+import { dialogs } from '../dialogs/hogwarts';
+import Lemon from '../entities/Lemon';
+import useSceneManager from '../@core/useSceneManager';
 
 const mapData = mapDataString(`
 # # # # # # # # # # # # # # # # #
-| 0 0 0 0 0 7 8 9 0 0 0 0 0 0 0 | 
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 - - - 1 1 1 - - - 1 1 - - - 1 1
+1 - - - 1 1 1 - - - 1 1 - - - 1 1
+2 g0- - 2 2 2 g1- - 2 2 g2- - 2 2
+| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 | 
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
               | 0 0 |
       cicjcl  | 0 0 |   cicjcl 
@@ -30,11 +39,11 @@ const mapData = mapDataString(`
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1
-| 0 B C B 0 1 0 3 0 0 0 0 0 0 0 |
-| 0 C C C 0 7 0 9 0 v3v40 0 0 0 |
-| 0 0 0 0 0 0 0 0 0 v1v20 0 0 0 |
+| 0 B C B 0 0 0 0 0 0 0 0 0 0 0 |
+| 0 C C C 0 0 0 0 0 v3v40 0 0 0 |
+| 0 0 0 0 0 0 0 0 0 v1v2L 0 0 0 |
 | 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 |
-1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3
+2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2d
 `);
 
 const resolveMapTile: TileMapResolver = (type, x, y) => {
@@ -52,15 +61,15 @@ const resolveMapTile: TileMapResolver = (type, x, y) => {
             );
         case '1':
             return (
-                <GameObject key={key} {...position} layer="ground">
-                    <Sprite {...spriteData.objects} state="grass3-0" />
+                <GameObject key={key} {...position} layer="wall">
+                    <Sprite {...spriteData.objects} state="castle-gate-wall" />
                 </GameObject>
             );
         case '2':
             return (
                 <GameObject key={key} {...position} layer="wall">
                     <Collider />
-                    <Sprite {...spriteData.objects} state="grass3-1" />
+                    <Sprite {...spriteData.objects} state="castle-gate-wall-foot" />
                 </GameObject>
             );
         case '3':
@@ -134,7 +143,7 @@ const resolveMapTile: TileMapResolver = (type, x, y) => {
                 </GameObject>
             );
 
-        case 'c':
+        case 'c': // Castle
             return (
                 <GameObject key={key} {...position} layer="wall">
                     <Collider />
@@ -144,7 +153,7 @@ const resolveMapTile: TileMapResolver = (type, x, y) => {
                     />
                 </GameObject>
             );
-        case 'C':
+        case 'C': // Crate
             return (
                 <Fragment>
                     <GameObject key={key} {...position} layer="wall">
@@ -154,7 +163,18 @@ const resolveMapTile: TileMapResolver = (type, x, y) => {
                     <Crate {...position} />
                 </Fragment>
             );
-        case 'B':
+
+        case 'L': // Lemon
+            return (
+                <Fragment>
+                    <GameObject key={key} {...position} layer="wall">
+                        <Collider />
+                        <Sprite {...spriteData.objects} state="grass1" />
+                    </GameObject>
+                    <Lemon {...position} />
+                </Fragment>
+            );
+        case 'B': // Barrel
             return (
                 <Fragment>
                     <GameObject key={key} {...position} layer="wall">
@@ -164,7 +184,7 @@ const resolveMapTile: TileMapResolver = (type, x, y) => {
                     <Barrel {...position} />
                 </Fragment>
             );
-        case 'M':
+        case 'M': // Mantle
             // eslint-disable-next-line no-case-declarations
             const color = tileVariant === 'r' ? 'red' : 'blue';
             return (
@@ -176,7 +196,7 @@ const resolveMapTile: TileMapResolver = (type, x, y) => {
                     <Mantle color={color} {...position} />
                 </Fragment>
             );
-        case 'S':
+        case 'S': // Sword
             return (
                 <Fragment>
                     <GameObject key={key} {...position} layer="wall">
@@ -186,33 +206,19 @@ const resolveMapTile: TileMapResolver = (type, x, y) => {
                     <Sword {...position} />
                 </Fragment>
             );
-        // case 'W':
-        //     return (
-        //         <Fragment key={key}>
-        //             {floor}
-        //             <Workstation {...position} />
-        //         </Fragment>
-        //     );
-        // case 'C':
-        //     return (
-        //         <Fragment key={key}>
-        //             {floor}
-        //             <CoffeeMachine {...position} />
-        //         </Fragment>
-        //     );
-        // case 'T':
-        //     return (
-        //         <Fragment key={key}>
-        //             {floor}
-        //             <Plant {...position} />
-        //         </Fragment>
-        //     );
+        case 'g': // castle gate
+            // eslint-disable-next-line no-case-declarations
+            const dialog = dialogs[type];
+            return <CastleGate dialog={dialog} {...position} />;
         default:
             return null;
     }
 };
 
-export default function OfficeScene() {
+export default function HogwartsScene() {
+    const { getGameState } = useGame();
+    const state = getGameState('hogwarts') || {};
+    const { x, y } = state.position || { x: 6, y: 3 };
     return (
         <>
             <GameObject name="map">
@@ -225,27 +231,7 @@ export default function OfficeScene() {
                 <Interactable />
                 <ScenePortal name="exit" enterDirection={[-1, 0]} target="other/start" />
             </GameObject>
-
-            {/* <Text
-                applyMatrix4={[0, 0, 0]}
-                color="#EC2D2D"
-                fontSize={12}
-                maxWidth={200}
-                lineHeight={1}
-                letterSpacing={0.02}
-                textAlign="left"
-                font="https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff"
-                // anchorX="center"
-                // anchorY="middle"
-            >
-                Hello
-            </Text> */}
-
-            <Player x={6} y={3} />
-            {/* <Plane position={[0.5, 1, 1.5]}>
-                <meshStandardMaterial color="red" />
-            </Plane>
-             */}
+            <Player x={x} y={y} />
         </>
     );
 }

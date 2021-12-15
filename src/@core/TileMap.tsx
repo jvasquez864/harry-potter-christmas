@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function TileMap({ data, resolver, definesMapSize = false }: Props) {
-    const { setMapSize, publish } = useGame();
+    const { setMapSize, publish, findGameObjectsByXY } = useGame();
     // const [mapData, setMapData] = useState([]);
     const mapData = useMemo(() => data.slice().reverse(), [data]);
 
@@ -45,6 +45,17 @@ export default function TileMap({ data, resolver, definesMapSize = false }: Prop
                 const res = [];
                 for (let x = 0; x < row.length; x += 2) {
                     const type = row.slice(x, x + 2).join('');
+                    // const gameObjectsAtXY = findGameObjectsByXY(x / 2, y);
+                    // const isPositionOccupied = gameObjectsAtXY.some(
+                    //     obj => obj.layer === 'obstacle'
+                    // );
+                    // // no object at position is considered out of bounds
+                    // if (isPositionOccupied) {
+                    //     res.push(null);
+                    // } else {
+                    //     res.push(resolver(type, x / 2, y));
+                    // }
+
                     res.push(resolver(type, x / 2, y));
                 }
                 return res;

@@ -65,6 +65,8 @@ export type GameObjectRef = Pick<GameObjectProps, 'name' | 'displayName'> & {
     disabled: Readonly<boolean>;
     setDisabled: Dispatch<SetStateAction<boolean>>;
     subscribe: PubSub['subscribe'];
+    inventory: string[];
+    updateInventory: Dispatch<SetStateAction<string[]>>;
 };
 
 function Persistence() {
@@ -106,6 +108,7 @@ export default function GameObject({
     const node = useRef(null);
     const [registry] = useState(() => new Map<string, any>());
     const [pubSub] = useState(() => createPubSub());
+    const [inventory, updateInventory] = useState([]);
     const [x, setX] = useStateFromProp(props.x || 0);
     const [y, setY] = useStateFromProp(props.y || 0);
     const [disabled, setDisabled] = useState(initialDisabled);
@@ -147,9 +150,11 @@ export default function GameObject({
             getComponent: registryUtils.getComponent,
             disabled,
             setDisabled,
+            inventory,
+            updateInventory,
             subscribe: pubSub.subscribe,
         }),
-        [name, displayName, layer, transform, registryUtils, disabled, pubSub]
+        [name, displayName, layer, transform, registryUtils, disabled, inventory, pubSub]
     );
 
     const getRef = useCallback(() => gameObjectRef, [gameObjectRef]);

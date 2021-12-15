@@ -6,6 +6,7 @@ import usePointerClick from '../@core/usePointerClick';
 export interface DialogInfo {
     character: string;
     dialog: string[];
+    onClose?: () => void;
 }
 
 export default function DialogScript() {

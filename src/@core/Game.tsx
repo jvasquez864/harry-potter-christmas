@@ -151,6 +151,7 @@ export default function Game({
             setCurrentDialogPageIndex(currentDialogPageIndex + 1);
             return;
         }
+        dialogInfo.onClose?.();
         setDialogOpen(false);
         setDialogInfo({} as DialogInfo);
         setCurrentDialogPageIndex(0);

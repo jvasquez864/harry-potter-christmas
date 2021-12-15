@@ -9,7 +9,7 @@ import HtmlOverlay from './@core/HtmlOverlay';
 import Scene from './@core/Scene';
 import SceneManager from './@core/SceneManager';
 import useWindowSize from './@core/useWindowSize';
-import OfficeScene from './scenes/OfficeScene';
+import HogwartsScene from './scenes/HogwartsScene';
 import OtherScene from './scenes/OtherScene';
 import soundData from './soundData';
 import spriteData from './spriteData';
@@ -40,15 +40,15 @@ export default function App() {
             <div css={styles.root(width, height)}>
                 <Game cameraZoom={80}>
                     <AssetLoader urls={urls} placeholder="Loading assets ...">
-                        <SceneManager defaultScene="office">
-                            <Scene id="office">
-                                <OfficeScene />
+                        <SceneManager defaultScene="hogwarts">
+                            <Scene id="hogwarts">
+                                <HogwartsScene />
                             </Scene>
                             <Scene id="other">
                                 <OtherScene />
                             </Scene>
                         </SceneManager>
-                        <DialogOverlay>hello</DialogOverlay>
+                        <DialogOverlay />
                     </AssetLoader>
                 </Game>
             </div>

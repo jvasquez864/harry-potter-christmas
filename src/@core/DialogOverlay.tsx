@@ -4,13 +4,20 @@ import { useFrame, useThree } from 'react-three-fiber';
 import * as THREE from 'three';
 import useGame from './useGame';
 import useWindowSize from './useWindowSize';
-import dialog, { flash, flashingArrow } from '../styles/dialog';
+import dialog, {
+    characterImage,
+    dialogText,
+    flash,
+    flashingArrow,
+} from '../styles/dialog';
+import useAsset from './useAsset';
 
 export default function DialogOverlay({ children, ...props }: HTMLProps) {
     const { paused, isDialogOpen, dialogInfo, currentDialogPageIndex } = useGame();
     const node = useRef<HTMLDivElement>();
     const { camera } = useThree();
     const [width] = useWindowSize();
+    const img = useAsset(`${dialogInfo.character}.png`);
 
     if (paused || !isDialogOpen) return null;
 
@@ -24,7 +31,8 @@ export default function DialogOverlay({ children, ...props }: HTMLProps) {
             {...props}
         >
             <div css={dialog(width * 0.9)}>
-                <div>{dialogInfo.dialog[currentDialogPageIndex]}</div>
+                <img css={characterImage()} src="./assets/harry.png" alt="Character" />
+                <div css={dialogText()}>{dialogInfo.dialog[currentDialogPageIndex]}</div>
                 <div css={flashingArrow()} />
             </div>
         </HTML>
