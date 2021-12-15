@@ -37,23 +37,35 @@ export const memoryMatchOverlay = (width: number, height: number) => {
 
 const slideKeyframes = keyframes`
  0% {
-     transform: translateX(100%)
+     transform: translateX(50%)
  }
 
  100% {
      /* right: unset; */
-     transform: translateX(-1000px)
+     transform: translateX(-100%)
  }
 `;
 
 export const memorySlidingCards = () => {
     return css`
+        display: flex;
+        align-items: center;
+        height: 100%;
         position: absolute;
-        /* left: -100px; */
-        /* width: 100px; */
-        /* height: 100px; */
         overflow: none;
-        /* animation: ${slideKeyframes} 9s linear forwards; */
+        animation: ${slideKeyframes} 9s linear forwards;
+    `;
+};
+
+export const memoryCardSelection = () => {
+    return css`
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        flex-wrap: wrap;
+        text-align: center;
+        /* height: 100%; */
     `;
 };
 
@@ -107,4 +119,29 @@ export const characterImage = (isHarry: boolean) => css`
     ${isHarry ? 'left' : 'right'}: 0;
     top: 0;
     margin-top: -100px;
+`;
+
+export const memoryCardImg = () => css`
+    width: 400px;
+    height: 400px;
+    margin-left: 100px;
+    margin-right: 100px;
+`;
+
+export const memoryCardImgOption = () => css`
+    /* width: 25%; */
+    height: 200px;
+`;
+
+export const memoryCardOptionContainer = () => css`
+    width: 25%;
+    height: 200px;
+    margin: 0 50px;
+    display: flex;
+    justify-content: center;
+    :hover {
+        cursor: pointer;
+        opacity: 0.5;
+        background-color: 'gray';
+    }
 `;

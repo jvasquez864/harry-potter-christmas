@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { HTML, HTMLProps } from 'drei';
 import { useFrame, useThree } from 'react-three-fiber';
 import * as THREE from 'three';
@@ -9,6 +9,10 @@ import dialog, {
     dialogText,
     flash,
     flashingArrow,
+    memoryCardImg,
+    memoryCardImgOption,
+    memoryCardOptionContainer,
+    memoryCardSelection,
     memoryMatchOverlay,
     memorySlidingCards,
 } from '../styles/dialog';
@@ -16,11 +20,13 @@ import useAsset from './useAsset';
 
 interface MemoryMatchOverlayProps extends HTMLProps {
     isOpen: boolean;
+    onGameEnd: (didWin: boolean) => void;
 }
 
 export default function MemoryMatchOverlay({
     children,
     isOpen,
+    onGameEnd,
     ...props
 }: MemoryMatchOverlayProps) {
     const { paused } = useGame();
@@ -28,21 +34,60 @@ export default function MemoryMatchOverlay({
     const { camera } = useThree();
     const [width, height] = useWindowSize();
     const [targetCards, setTargetCards] = useState([]);
-    const [difficultyLevel, setDifficultyLevel] = useState(6);
+    const [selectedCards, setSelectedCards] = useState([]);
+    const [difficultyLevel, setDifficultyLevel] = useState(3);
+
+    const [isChoosingCards, setIsChoosingCards] = useState(false);
+    const maxLevel = useMemo(() => 3, []);
     const possibleCards = useMemo(
-        () => ['ring', 'deathly-hollows', 'sorting-hat', 'robe'],
+        () => [
+            'ring',
+            'deathly-hallows',
+            'golden-snitch',
+            'diadem',
+            'death-eater',
+            'sword',
+        ],
         []
     );
 
     useEffect(() => {
-        if (isOpen) {
+        if (difficultyLevel > maxLevel) {
+            // win
+            onGameEnd(true);
+            return;
+        }
+        if (isOpen && !isChoosingCards) {
             const tmpTarget = [...Array(difficultyLevel)].map(() => {
                 const randomCardIndex = Math.floor(Math.random() * possibleCards.length);
                 return possibleCards[randomCardIndex];
             });
             setTargetCards(tmpTarget);
+            setTimeout(() => {
+                setIsChoosingCards(true);
+            }, 10000);
         }
-    }, [isOpen]);
+    }, [isOpen, isChoosingCards, difficultyLevel, possibleCards]);
+
+    const onCardSelected = useCallback(
+        (card: string) => {
+            const tmp = [...selectedCards, card];
+            for (const tmpCardIndex in tmp) {
+                if (tmp[tmpCardIndex] !== targetCards[tmpCardIndex]) {
+                    onGameEnd(false);
+                    return;
+                }
+            }
+            if (tmp.length === targetCards.length) {
+                setDifficultyLevel(difficultyLevel + 1);
+                setIsChoosingCards(false);
+                setSelectedCards([]);
+            } else {
+                setSelectedCards(tmp);
+            }
+        },
+        [difficultyLevel, selectedCards, targetCards]
+    );
 
     if (paused || !isOpen) return null;
 
@@ -56,13 +101,39 @@ export default function MemoryMatchOverlay({
             {...props}
         >
             <div css={memoryMatchOverlay(width * 0.9, height * 0.9)}>
-                <div css={memorySlidingCards()}>
-                    {targetCards.map((val, i) => (
-                        <span key={i} style={{ margin: 25 }}>
-                            {val}
-                        </span>
-                    ))}
-                </div>
+                {!isChoosingCards && (
+                    <div css={memorySlidingCards()}>
+                        {targetCards.map((val, i) => (
+                            <img
+                                key={i}
+                                css={memoryCardImg()}
+                                src={`./assets/${val}.png`}
+                                alt={`Item - ${val}`}
+                            />
+                        ))}
+                    </div>
+                )}
+                {isChoosingCards && (
+                    <div css={memoryCardSelection()}>
+                        {possibleCards.map((val, i) => (
+                            <div
+                                key={i}
+                                role="button"
+                                css={memoryCardOptionContainer()}
+                                onClick={() => onCardSelected(val)}
+                            >
+                                <img
+                                    css={memoryCardImgOption()}
+                                    src={`./assets/${val}.png`}
+                                    alt={`Item - ${val}`}
+                                />
+                            </div>
+                        ))}
+                        <div style={{ width: '100%', textAlign: 'center' }}>
+                            {selectedCards.length} out of {targetCards.length} selected
+                        </div>
+                    </div>
+                )}
             </div>
         </HTML>
     );

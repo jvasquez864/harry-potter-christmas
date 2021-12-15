@@ -26,10 +26,14 @@ export const dialogs: { [key: string]: DialogInfo } = {
                 text: 'I will always be with you, Harry',
                 character: 'dumbledore',
             },
-
             {
                 text: "Charming, Harry.  Let's see how helpful the deceased are to you.",
                 character: 'voldemort',
+            },
+            {
+                text:
+                    "Harry, listen carefully.  Voldemort is trying to get into your mind.\nHe's going to show you a series of sliding images.  As long as you can remember the images you see in their EXACT order, he cannot invade your mind.  Are you ready, Harry?",
+                character: 'dumbledore',
             },
         ],
     },

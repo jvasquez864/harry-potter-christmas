@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import * as THREE from 'three';
 import useGame from '../@core/useGame';
 import Collider from '../@core/Collider';
@@ -9,6 +9,9 @@ import TileMap from '../@core/TileMap';
 import { mapDataString } from '../@core/utils/mapUtils';
 import Player from '../entities/Player';
 import resolveMapTile from '../tile-resolvers/hogwarts';
+import useGameEvent from '../@core/useGameEvent';
+import { SceneReadyEvent } from '../@core/Scene';
+import { dialogs } from '../dialogs/hogwarts';
 
 const mapData = mapDataString(`
 # # # # # # # # # # # # # # # # #
@@ -34,7 +37,14 @@ const mapData = mapDataString(`
 `);
 
 export default function HogwartsScene() {
-    const { getGameState } = useGame();
+    const { getGameState, openDialog } = useGame();
+    useGameEvent<SceneReadyEvent>('scene-ready', () => {
+        const didWinMemoryGame = getGameState('memoryWin');
+        const dialog = didWinMemoryGame
+            ? dialogs['memory-game-win']
+            : dialogs['memory-game-loss'];
+        didWinMemoryGame !== undefined && openDialog(dialog);
+    });
     const state = getGameState('hogwarts') || {};
     const { x, y } = state.position || { x: 1, y: 14 };
     const isGate1Open = state['gate-g0-open'];

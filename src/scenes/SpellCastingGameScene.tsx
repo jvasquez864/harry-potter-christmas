@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useGame from '../@core/useGame';
 import { dialogs } from '../dialogs/spellcasting';
 import * as THREE from 'three';
@@ -13,6 +13,7 @@ import resolveMapTile from '../tile-resolvers/hogwarts';
 import useGameEvent from '../@core/useGameEvent';
 import { SceneReadyEvent } from '../@core/Scene';
 import MemoryMatchOverlay from '../@core/MemoryMatchOverlay';
+import useSceneManager from '../@core/useSceneManager';
 
 const mapData = mapDataString(`
 # # # # # # # # # # # # # # # # #
@@ -28,9 +29,18 @@ const mapData = mapDataString(`
 `);
 
 export default function SpellCastingGameScene() {
-    const { openDialog } = useGame();
+    const { openDialog, setGameState } = useGame();
+    const { setScene } = useSceneManager();
     const [isMiniGameStarted, setIsMiniGameStarted] = useState(false);
 
+    const onGameEnd = useCallback(
+        (didWin: boolean) => {
+            setIsMiniGameStarted(false);
+            setGameState('memoryWin', didWin);
+            setScene('hogwarts');
+        },
+        [setGameState, setScene]
+    );
     useGameEvent<SceneReadyEvent>('scene-ready', () => {
         openDialog({ ...dialogs.intro, onClose: () => setIsMiniGameStarted(true) });
     });
@@ -50,7 +60,8 @@ export default function SpellCastingGameScene() {
                     target="hogwarts/spellCastingEnter"
                 />
             </GameObject>
-            <MemoryMatchOverlay isOpen={isMiniGameStarted} />
+            <MemoryMatchOverlay isOpen={isMiniGameStarted} onGameEnd={onGameEnd} />
+
             <Player canWalk={false} x={4} y={4} />
         </>
     );

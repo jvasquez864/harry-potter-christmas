@@ -40,4 +40,22 @@ export const dialogs: { [key: string]: DialogInfo } = {
             },
         ],
     },
+    'memory-game-loss': {
+        dialog: [
+            {
+                text:
+                    "You have to pay more attention, Harry!  You blacked out in there - I managed to help you escape just in the nick of time.  Only go back when you are sure you're ready.",
+                character: 'dumbledore',
+            },
+        ],
+    },
+    'memory-game-win': {
+        dialog: [
+            {
+                text:
+                    'Well done, Harry!  I knew you could do it.  Voldemort managed to get away this time, but we should take advantage of this time to train and become stronger.',
+                character: 'dumbledore',
+            },
+        ],
+    },
 };
