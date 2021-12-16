@@ -145,3 +145,8 @@ export const memoryCardOptionContainer = () => css`
         background-color: 'gray';
     }
 `;
+
+export const spellCasting = () => css`
+    font-size: 64px;
+    color: green;
+`;

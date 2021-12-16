@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import useGame from '../@core/useGame';
-import { dialogs } from '../dialogs/memoryMatch';
+import { dialogs } from '../dialogs/spellcasting';
 import * as THREE from 'three';
 import Collider from '../@core/Collider';
 import GameObject from '../@core/GameObject';
@@ -14,6 +14,8 @@ import useGameEvent from '../@core/useGameEvent';
 import { SceneReadyEvent } from '../@core/Scene';
 import MemoryMatchOverlay from '../@core/MemoryMatchOverlay';
 import useSceneManager from '../@core/useSceneManager';
+import { PubSubEvent } from '../@core/utils/createPubSub';
+import SpellcastingOverlay from '../@core/SpellcastingOverlay';
 
 const mapData = mapDataString(`
 # # # # # # # # # # # # # # # # #
@@ -28,6 +30,7 @@ const mapData = mapDataString(`
 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
 `);
 
+export type SpellCastingBeginEvent = PubSubEvent<'spell-casting-begin', string>;
 export default function SpellCastingGameScene() {
     const { openDialog, setGameState } = useGame();
     const { setScene } = useSceneManager();
@@ -36,14 +39,17 @@ export default function SpellCastingGameScene() {
     const onGameEnd = useCallback(
         (didWin: boolean) => {
             setIsMiniGameStarted(false);
-            setGameState('memoryMatchWin', didWin);
+            setGameState('spellcastingWin', didWin);
             setScene('hogwarts');
         },
         [setGameState, setScene]
     );
-    // useGameEvent<SceneReadyEvent>('scene-ready', () => {
-    //     openDialog({ ...dialogs.intro, onClose: () => setIsMiniGameStarted(true) });
-    // });
+
+    useGameEvent<SpellCastingBeginEvent>('spell-casting-begin', spellName => {
+        const dialog = dialogs[`learn-${spellName}`];
+        openDialog({ ...dialog, onClose: () => setIsMiniGameStarted(true) });
+    });
+
     return (
         <>
             <GameObject name="map">
@@ -61,7 +67,8 @@ export default function SpellCastingGameScene() {
                 />
             </GameObject>
 
-            <Player x={2} y={5} />
+            <Player canWalk={!isMiniGameStarted} x={2} y={5} />
+            <SpellcastingOverlay isOpen={isMiniGameStarted} />
         </>
     );
 }
