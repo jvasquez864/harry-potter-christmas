@@ -19,6 +19,15 @@ export default function dialog(width: number) {
     `;
 }
 
+export const dialogSpellCasting = (width: number) => {
+    return css`
+        ${dialog(width)} /* flex-wrap: wrap; */
+        justify-content: space-evenly;
+        align-items: center;
+        padding: 16px;
+    `;
+};
+
 export const memoryMatchOverlay = (width: number, height: number) => {
     return css`
         display: flex;
@@ -147,6 +156,9 @@ export const memoryCardOptionContainer = () => css`
 `;
 
 export const spellCasting = () => css`
-    font-size: 64px;
+    width: 80px;
+    height: 80px;
+
+    /* transform: scale(0.2); */
     color: green;
 `;
