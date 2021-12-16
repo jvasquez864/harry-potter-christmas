@@ -145,13 +145,15 @@ export default function resolveMapTile(type, x, y) {
                 </Fragment>
             );
         case 'B': // Barrel
+            // eslint-disable-next-line no-case-declarations
+            const isForSpell = tileVariant === 's';
             return (
                 <Fragment>
                     <GameObject key={key} {...position} layer="wall">
                         <Collider />
                         <Sprite {...spriteData.objects} state="grass1" />
                     </GameObject>
-                    <Barrel {...position} />
+                    <Barrel isForSpell={isForSpell} {...position} />
                 </Fragment>
             );
         case 'T': // Lantern

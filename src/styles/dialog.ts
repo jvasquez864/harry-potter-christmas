@@ -144,14 +144,18 @@ export const flashingArrow = (isHarry: boolean) => css`
     animation: ${flashKeyframe} 1.5s ease infinite;
 `;
 
-export const characterImage = (isHarry: boolean) => css`
-    width: 200px;
-    height: 425px;
-    position: absolute;
-    ${isHarry ? 'left' : 'right'}: 0;
-    top: 0;
-    margin-top: -100px;
-`;
+export const characterImage = (character: string) => {
+    const isHarry = character === 'harry';
+    const isHermione = character === 'hermione';
+    return css`
+        width: ${isHermione ? 300 : 200}px;
+        height: 425px;
+        position: absolute;
+        ${isHarry ? 'left' : 'right'}: 0;
+        top: 0;
+        margin-top: -100px;
+    `;
+};
 
 export const memoryCardImg = () => css`
     width: 400px;

@@ -23,12 +23,18 @@ import useKeyActions from './useKeyActions';
 import { Line } from 'rc-progress';
 
 interface SpellcastingOverlay extends HTMLProps {
-    isOpen: boolean;
-    onGameEnd: (didWin: boolean) => void;
+    onGameEnd: (didWin: boolean, spellName: string) => void;
+    startingLevel: number;
+    maxLevel: number;
+    maxTimePerLevel: number;
+    spellName: string;
 }
 export default function SpellcastingOverlay({
     children,
-    isOpen,
+    startingLevel,
+    maxLevel,
+    maxTimePerLevel,
+    spellName,
     onGameEnd,
     ...props
 }: SpellcastingOverlay) {
@@ -39,26 +45,11 @@ export default function SpellcastingOverlay({
     const arrows = useMemo(() => ['left', 'right', 'up', 'down'], []);
     const [targetArrows, setTargetArrows] = useState([]);
     const [pressedArrows, setPressedArrows] = useState([]);
-    const [difficultyLevel, setDifficultyLevel] = useState(3);
-    const maxLevel = useMemo(() => 4, []);
+    const [difficultyLevel, setDifficultyLevel] = useState(startingLevel);
     const maxLives = useMemo(() => 3, []);
-    const maxTimePerLevel = useMemo(() => 4000, []);
     const [levelStartTime, setLevelStartTime] = useState(-1);
     const [elapsedLevelTime, setElapsedLevelTime] = useState(0);
     const [currentLives, setCurrentLives] = useState(maxLives);
-
-    const endGame = useCallback(
-        (didWin: boolean) => {
-            setTargetArrows([]);
-            setPressedArrows([]);
-            setDifficultyLevel(3);
-            setLevelStartTime(-1);
-            setElapsedLevelTime(0);
-            setCurrentLives(maxLives);
-            onGameEnd(didWin);
-        },
-        [maxLives, onGameEnd]
-    );
 
     const setRandomArrows = useCallback(() => {
         const tmpTarget = [...Array(difficultyLevel)].map(() => {
@@ -90,22 +81,20 @@ export default function SpellcastingOverlay({
 
     useEffect(() => {
         if (currentLives <= 0) {
-            endGame(false);
+            onGameEnd(false, spellName);
         }
-    }, [currentLives, endGame]);
+    }, [currentLives, onGameEnd, spellName]);
 
     // Handle updating target arrows when difficulty level changes
     useEffect(() => {
         if (difficultyLevel > maxLevel) {
-            endGame(true);
+            onGameEnd(true, spellName);
             return;
         }
-        if (isOpen) {
-            // This is run as soon as the game starts and whenever the difficulty level changes
-            // so that we update the target arrows
-            setRandomArrows();
-        }
-    }, [isOpen, difficultyLevel, maxLevel, setRandomArrows, endGame]);
+        // This is run as soon as the game starts and whenever the difficulty level changes
+        // so that we update the target arrows
+        setRandomArrows();
+    }, [difficultyLevel, setRandomArrows, maxLevel, onGameEnd, spellName]);
 
     // Handle updating difficulty level/lives based on pressed arrows
     useEffect(() => {
@@ -139,7 +128,7 @@ export default function SpellcastingOverlay({
         },
     });
 
-    if (paused || !isOpen) return null;
+    if (paused) return null;
 
     const viewport = new THREE.Vector3(1, 1).unproject(camera).sub(camera.position);
     const { x, y } = camera.position;

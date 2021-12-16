@@ -33,7 +33,7 @@ export default function DialogOverlay({ children, ...props }: HTMLProps) {
         >
             <div css={dialog(width * 0.9)}>
                 <img
-                    css={characterImage(isHarry)}
+                    css={characterImage(character)}
                     src={`./assets/${character}.png`}
                     alt="Character"
                 />
