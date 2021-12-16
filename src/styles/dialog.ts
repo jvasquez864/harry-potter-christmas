@@ -22,9 +22,32 @@ export default function dialog(width: number) {
 export const dialogSpellCasting = (width: number) => {
     return css`
         ${dialog(width)} /* flex-wrap: wrap; */
+        flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
         padding: 16px;
+    `;
+};
+
+export const spellCastingArrowContainer = () => {
+    return css`
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: center;
+        padding: 16px;
+    `;
+};
+
+export const spellCastingLifeContainer = () => {
+    return css`
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        margin-right: 150px;
     `;
 };
 
@@ -161,4 +184,17 @@ export const spellCasting = () => css`
 
     /* transform: scale(0.2); */
     color: green;
+`;
+
+export const spellCastingProgressBar = () => css`
+    width: 80%;
+`;
+
+export const spellCastingLifeImg = () => css`
+    width: 60px;
+    height: 60px;
+    &:last-child {
+        width: 150;
+    }
+    margin-right: 40px;
 `;

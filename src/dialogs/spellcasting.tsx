@@ -23,12 +23,36 @@ export const dialogs: { [key: string]: DialogInfo } = {
                 character: 'dumbledore',
             },
             {
+                text:
+                    'You will have a few seconds to get each set of arrows correct.  If you run out of time or fail 3 times, you lose.  Got it?',
+                character: 'dumbledore',
+            },
+            {
                 text: 'Sounds simple enough.',
                 character: 'harry',
             },
 
             {
                 text: 'Very well. Begin!',
+                character: 'dumbledore',
+            },
+        ],
+    },
+    'learn-stupefy-win': {
+        dialog: [
+            {
+                text:
+                    "Well done, Harry!  But this is just the beginning.  Let's move on to the more difficult spells.",
+                character: 'dumbledore',
+            },
+        ],
+    },
+
+    'learn-stupefy-loss': {
+        dialog: [
+            {
+                text:
+                    "Very close, Harry!  This is why we need to revisit the fundamentals.  Let's try again.",
                 character: 'dumbledore',
             },
         ],

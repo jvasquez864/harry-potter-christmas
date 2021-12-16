@@ -39,8 +39,11 @@ export default function SpellCastingGameScene() {
     const onGameEnd = useCallback(
         (didWin: boolean) => {
             setIsMiniGameStarted(false);
-            setGameState('spellcastingWin', didWin);
-            setScene('hogwarts');
+            const result = didWin ? 'win' : 'loss';
+            const resultDialog = dialogs[`learn-stupefy-${result}`];
+            openDialog(resultDialog);
+            // setGameState('spellcastingWin', didWin);
+            // setScene('hogwarts');
         },
         [setGameState, setScene]
     );
@@ -68,7 +71,9 @@ export default function SpellCastingGameScene() {
             </GameObject>
 
             <Player canWalk={!isMiniGameStarted} x={2} y={5} />
-            <SpellcastingOverlay isOpen={isMiniGameStarted} />
+            {isMiniGameStarted && (
+                <SpellcastingOverlay isOpen={isMiniGameStarted} onGameEnd={onGameEnd} />
+            )}
         </>
     );
 }

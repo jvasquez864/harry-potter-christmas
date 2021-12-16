@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { HTML, HTMLProps } from 'drei';
 import { useFrame, useThree } from 'react-three-fiber';
 import * as THREE from 'three';
@@ -11,18 +11,25 @@ import dialog, {
     flash,
     flashingArrow,
     spellCasting,
+    spellCastingArrowContainer,
+    spellCastingLifeContainer,
+    spellCastingLifeImg,
+    spellCastingProgressBar,
 } from '../styles/dialog';
 import useAsset from './useAsset';
 import useKeyPress from './useKeyPress';
 import useGameLoop from './useGameLoop';
 import useKeyActions from './useKeyActions';
+import { Line } from 'rc-progress';
 
 interface SpellcastingOverlay extends HTMLProps {
     isOpen: boolean;
+    onGameEnd: (didWin: boolean) => void;
 }
 export default function SpellcastingOverlay({
     children,
     isOpen,
+    onGameEnd,
     ...props
 }: SpellcastingOverlay) {
     const { paused } = useGame();
@@ -34,26 +41,84 @@ export default function SpellcastingOverlay({
     const [pressedArrows, setPressedArrows] = useState([]);
     const [difficultyLevel, setDifficultyLevel] = useState(3);
     const maxLevel = useMemo(() => 4, []);
+    const maxLives = useMemo(() => 3, []);
+    const maxTimePerLevel = useMemo(() => 4000, []);
+    const [levelStartTime, setLevelStartTime] = useState(-1);
+    const [elapsedLevelTime, setElapsedLevelTime] = useState(0);
+    const [currentLives, setCurrentLives] = useState(maxLives);
+
+    const endGame = useCallback(
+        (didWin: boolean) => {
+            setTargetArrows([]);
+            setPressedArrows([]);
+            setDifficultyLevel(3);
+            setLevelStartTime(-1);
+            setElapsedLevelTime(0);
+            setCurrentLives(maxLives);
+            onGameEnd(didWin);
+        },
+        [maxLives, onGameEnd]
+    );
+
+    const setRandomArrows = useCallback(() => {
+        const tmpTarget = [...Array(difficultyLevel)].map(() => {
+            const randomArrowIndex = Math.floor(Math.random() * arrows.length);
+            return arrows[randomArrowIndex];
+        });
+        setTargetArrows(tmpTarget);
+        // Reset the start time every new level
+        setLevelStartTime(-1);
+    }, [arrows, difficultyLevel]);
+
+    // Handle updating time elapsed / lives based on time
+    useGameLoop(time => {
+        // If the game has begun but we haven't set the start time
+        if (targetArrows.length && levelStartTime === -1) {
+            setLevelStartTime(time);
+            return;
+        }
+        const elapsedTime = time - levelStartTime;
+        setElapsedLevelTime(elapsedTime);
+        if (levelStartTime !== -1 && elapsedTime > maxTimePerLevel) {
+            setCurrentLives(lives => lives - 1);
+            setElapsedLevelTime(0);
+            setLevelStartTime(-1);
+            setPressedArrows([]);
+            setRandomArrows();
+        }
+    });
 
     useEffect(() => {
-        if (isOpen) {
-            const tmpTarget = [...Array(difficultyLevel)].map(() => {
-                const randomArrowIndex = Math.floor(Math.random() * arrows.length);
-                return arrows[randomArrowIndex];
-            });
-            setTargetArrows(tmpTarget);
+        if (currentLives <= 0) {
+            endGame(false);
         }
-    }, [isOpen, difficultyLevel, arrows]);
+    }, [currentLives, endGame]);
 
+    // Handle updating target arrows when difficulty level changes
+    useEffect(() => {
+        if (difficultyLevel > maxLevel) {
+            endGame(true);
+            return;
+        }
+        if (isOpen) {
+            // This is run as soon as the game starts and whenever the difficulty level changes
+            // so that we update the target arrows
+            setRandomArrows();
+        }
+    }, [isOpen, difficultyLevel, maxLevel, setRandomArrows, endGame]);
+
+    // Handle updating difficulty level/lives based on pressed arrows
     useEffect(() => {
         for (const i in pressedArrows) {
             // Start over if you press the wrong button
             if (pressedArrows[i] !== targetArrows[i]) {
                 setPressedArrows([]);
+                setCurrentLives(lives => lives - 1);
+                return;
             }
         }
         // Advance to the next level when you match everything
-        if (pressedArrows.length === targetArrows.length) {
+        if (targetArrows.length && pressedArrows.length === targetArrows.length) {
             setPressedArrows([]);
             setDifficultyLevel(difficultyLevel + 1);
         }
@@ -84,14 +149,47 @@ export default function SpellcastingOverlay({
             ref={node}
             {...props}
         >
-            <div css={dialogSpellCasting(width * 0.9)}>
-                {targetArrows.map((arrow, i) => {
-                    const src =
-                        targetArrows[i] === pressedArrows[i]
-                            ? `../assets/finger-${arrow}-correct.png`
-                            : `../assets/finger-${arrow}.png`;
-                    return <img src={src} alt="Target arrow" css={spellCasting()} />;
-                })}
+            <div css={() => dialogSpellCasting(width * 0.9)}>
+                <div css={spellCastingArrowContainer()}>
+                    {targetArrows.map((arrow, i) => {
+                        const src =
+                            targetArrows[i] === pressedArrows[i]
+                                ? `../assets/finger-${arrow}-correct.png`
+                                : `../assets/finger-${arrow}.png`;
+                        return (
+                            <img
+                                key={i}
+                                src={src}
+                                alt="Target arrow"
+                                css={spellCasting()}
+                            />
+                        );
+                    })}
+                </div>
+
+                <div css={spellCastingProgressBar()}>
+                    <Line
+                        percent={(elapsedLevelTime / maxTimePerLevel) * 100}
+                        strokeWidth={2}
+                        strokeColor="#a261df"
+                    />
+                </div>
+                <div css={spellCastingLifeContainer()}>
+                    {[...Array(maxLives)].map((_, i) => {
+                        const isLifeFilled = i < currentLives;
+                        const src = isLifeFilled
+                            ? '../assets/wizard-hat.png'
+                            : '../assets/wizard-hat-outline.png';
+                        return (
+                            <img
+                                css={spellCastingLifeImg()}
+                                key={i}
+                                src={src}
+                                alt="Life"
+                            />
+                        );
+                    })}
+                </div>
             </div>
         </HTML>
     );
