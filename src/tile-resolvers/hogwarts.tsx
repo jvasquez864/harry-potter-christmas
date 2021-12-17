@@ -23,6 +23,12 @@ export default function resolveMapTile(type, x, y) {
     const tileType = resolvedType[0];
     const tileVariant = resolvedType[1];
     switch (tileType) {
+        case 'f':
+            return (
+                <GameObject key={key} {...position} layer="ground">
+                    <Sprite {...spriteData.objects} state={`gravel-${tileVariant}`} />
+                </GameObject>
+            );
         case '0':
             return (
                 <GameObject key={key} {...position} layer="ground">

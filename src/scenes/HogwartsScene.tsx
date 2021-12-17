@@ -16,16 +16,16 @@ import { dialogs } from '../dialogs/hogwarts';
 const mapData = mapDataString(`
 # # # # # # # # # # # # # # # # #
 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-1 - - - 1 1 1 - - - 1 1 - - - 1 1
-1 - - - 1 1 1 - - - 1 1 - - - 1 1
-2 g0- - 2 2 2 g1- - 2 2 g2- - 2 2
+1 - - - 1 1 1 - - - 1 1 1 - - - 1
+1 - - - 1 1 1 - - - 1 1 1 - - - 1
+2 g0- - 2 2 2 g1- - 2 2 2 g2- - 2
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 | 
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
-              | 0 0 |
-      cicjcl  | 0 0 |   cicjcl 
-      cecfch  | 0 0 |   cecfch 
-      cacbcd  Mb0 0 Mr  cacbcd     
-      c1S c3  | 0 0 |   c1S c3 
+            | 0 0 0 |
+    cicjcl  | 0 0 0 |   cicjcl 
+    cecfch  | 0 0 0 |   cecfch 
+    cacbcd  Mb0 0 0 Mr  cacbcd     
+    c1S c3  | 0 0 0 |   c1S c3 
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1
@@ -49,6 +49,7 @@ export default function HogwartsScene() {
     const { x, y } = state.position || { x: 1, y: 14 };
     const isGate1Open = state['gate-g0-open'];
     const isGate2Open = state['gate-g1-open'];
+    const isGate3Open = state['gate-g2-open'];
     return (
         <>
             <GameObject name="map">
@@ -75,6 +76,18 @@ export default function HogwartsScene() {
                         name="spellcastingEnter"
                         enterDirection={[0, -1]}
                         target="spellcasting/start"
+                    />
+                </GameObject>
+            )}
+
+            {isGate3Open && (
+                <GameObject x={14} y={15}>
+                    <Collider />
+                    <Interactable />
+                    <ScenePortal
+                        name="targetPracticeEnter"
+                        enterDirection={[0, -1]}
+                        target="targetPractice/start"
                     />
                 </GameObject>
             )}

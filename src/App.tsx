@@ -15,6 +15,7 @@ import MemoryMatchGameScene from './scenes/MemoryMatchGameScene';
 import soundData from './soundData';
 import spriteData from './spriteData';
 import globalStyles from './styles/global';
+import TargetPracticeGameScene from './scenes/TargetPracticeGameScene';
 
 const styles = {
     root: (width: number, height: number) => css`
@@ -50,6 +51,9 @@ export default function App() {
                             </Scene>
                             <Scene id="spellcasting">
                                 <SpellCastingGameScene />
+                            </Scene>
+                            <Scene id="targetPractice">
+                                <TargetPracticeGameScene />
                             </Scene>
                         </SceneManager>
                         <DialogOverlay />
