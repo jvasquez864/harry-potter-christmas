@@ -9,21 +9,25 @@ import CameraFollowScript from '../components/CameraFollowScript';
 import CharacterScript from '../components/CharacterScript';
 import PlayerScript from '../components/PlayerScript';
 import spriteData from '../spriteData';
+import useGameObject from '../@core/useGameObject';
+import Attackable from '../@core/Attackable';
 
 interface PlayerProps extends GameObjectProps {
     canWalk?: boolean;
+    onAttacked?: () => void;
 }
-export default function Player({ canWalk, ...props }: PlayerProps) {
+export default function Player({ canWalk, onAttacked, ...props }: PlayerProps) {
     return (
         <GameObject name="player" displayName="Player" layer="character" {...props}>
             {canWalk && <Moveable />}
             <Interactable />
+            <Attackable />
             <Collider />
             <CharacterScript>
                 <Sprite {...spriteData.player} />
             </CharacterScript>
             <CameraFollowScript />
-            <PlayerScript canWalk={canWalk} />
+            <PlayerScript canWalk={canWalk} onAttacked={onAttacked} />
             <DialogScript />
         </GameObject>
     );
@@ -31,4 +35,7 @@ export default function Player({ canWalk, ...props }: PlayerProps) {
 
 Player.defaultProps = {
     canWalk: true,
+    onAttacked: () => {
+        /* No-op */
+    },
 };

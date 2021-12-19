@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useGame from '../@core/useGame';
 import { Position } from '../@core/GameObject';
 import { InteractableRef } from '../@core/Interactable';
@@ -12,26 +12,53 @@ import usePointer from '../@core/usePointer';
 import usePointerClick from '../@core/usePointerClick';
 import tileUtils from '../@core/utils/tileUtils';
 import PlayerPathOverlay from './PlayerPathOverlay';
+import { AttackableRef, AttackEvent } from '../@core/Attackable';
+import useGameObjectEvent from '../@core/useGameObjectEvent';
+import useKeyActions from 'src/@core/useKeyActions';
 
 interface PlayerProps {
     canWalk: boolean;
+    onAttacked: () => void;
 }
-export default function PlayerScript({ canWalk }: PlayerProps) {
-    const { getComponent, transform } = useGameObject();
+export default function PlayerScript({ canWalk, onAttacked }: PlayerProps) {
+    const { getComponent, transform, publish } = useGameObject();
     const { isDialogOpen } = useGame();
     const testCollision = useCollisionTest();
     const findPath = usePathfinding();
     const [path, setPath] = useState<Position[]>([]);
     const [pathOverlayEnabled, setPathOverlayEnabled] = useState(true);
+    const [lastFireTime, setLastFireTime] = useState(-1);
+
+    useGameObjectEvent<AttackEvent>('attacked', () => {
+        onAttacked();
+    });
+
+    const handleProjectileFile = useCallback(
+        time => {
+            // Limit firing to once every 1.5 secs
+            if (lastFireTime !== -1 && time - lastFireTime < 800) {
+                return;
+            }
+            setLastFireTime(time);
+            console.log('in playter script fire');
+            getComponent<AttackableRef>('Attackable')?.shoot();
+        },
+        [getComponent, lastFireTime]
+    );
 
     // key controls
     const leftKey = useKeyPress(['a']);
     const rightKey = useKeyPress(['d']);
     const upKey = useKeyPress(['w']);
     const downKey = useKeyPress(['s']);
+    const spaceBar = useKeyPress([' ']);
 
-    useGameLoop(() => {
+    useGameLoop(time => {
         if (isDialogOpen || !canWalk) return;
+        if (spaceBar) {
+            handleProjectileFile(time);
+            return;
+        }
         const direction = {
             x: -Number(leftKey) + Number(rightKey),
             y: Number(upKey) - Number(downKey),
@@ -61,29 +88,47 @@ export default function PlayerScript({ canWalk }: PlayerProps) {
     // mouse controls
     const pointer = usePointer();
 
+    const resolvePointerMovement = useCallback(() => {
+        try {
+            const nextPath = findPath({ to: pointer });
+            // Try interaction on last th
+            (async () => {
+                const [nextPosition] = nextPath;
+                nextPath.length === 1 && // try interaction on last step of path
+                    (await getComponent<InteractableRef>('Interactable')?.interact(
+                        nextPosition
+                    ));
+            })();
+
+            if (path.length > 0) {
+                nextPath.unshift(transform);
+            }
+            setPath(nextPath);
+            setPathOverlayEnabled(true);
+        } catch {
+            // pointer out of bounds
+            setPath([]);
+        }
+    }, [findPath, getComponent, path.length, pointer, transform]);
+
+    const resolvePointerInteraction = useCallback(() => {
+        try {
+            (async () => {
+                // try interaction on last step of path
+                await getComponent<AttackableRef>('Attackable')?.attack(pointer);
+            })();
+        } catch {
+            // pointer out of bounds
+            setPath([]);
+        }
+    }, [getComponent, pointer]);
+
     usePointerClick(event => {
         if (isDialogOpen || !canWalk) return;
         if (event.button === 0) {
-            try {
-                const nextPath = findPath({ to: pointer });
-                // Try interaction on last th
-                (async () => {
-                    const [nextPosition] = nextPath;
-                    nextPath.length === 1 && // try interaction on last step of path
-                        (await getComponent<InteractableRef>('Interactable')?.interact(
-                            nextPosition
-                        ));
-                })();
-
-                if (path.length > 0) {
-                    nextPath.unshift(transform);
-                }
-                setPath(nextPath);
-                setPathOverlayEnabled(true);
-            } catch {
-                // pointer out of bounds
-                setPath([]);
-            }
+            resolvePointerMovement();
+        } else if (event.button === 2) {
+            resolvePointerInteraction();
         }
     });
 
@@ -102,7 +147,7 @@ export default function PlayerScript({ canWalk }: PlayerProps) {
                 setPath(current => current.slice(1));
             }
         })();
-    }, [path, getComponent]);
+    }, [path, getComponent, canWalk]);
 
     return (
         <PlayerPathOverlay

@@ -16,6 +16,7 @@ export interface GraphicProps {
     frameTime?: number;
     scale?: number;
     flipX?: number;
+    rotate?: boolean;
     color?: string;
     opacity?: number;
     offset?: Position;
@@ -42,6 +43,7 @@ export default memo(
             frameTime = 200,
             scale = 1,
             flipX = 1,
+            rotate = false,
             color = '#fff',
             opacity = 1,
             offset = { x: 0, y: 0 },
@@ -146,6 +148,7 @@ export default memo(
                 ref={ref}
                 position={[offset.x, offset.y, -offset.y / 100]}
                 scale={[flipX * scale, scale, 1]}
+                rotation={[0, 0, rotate ? 90 : 0]}
                 geometry={geometry}
             >
                 {basic ? (

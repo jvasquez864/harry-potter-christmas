@@ -13,6 +13,7 @@ export type SpriteRef = ComponentRef<
         setScale: Dispatch<SetStateAction<number>>;
         setOffset: Dispatch<SetStateAction<Position>>;
         flipX: number;
+        rotate: boolean;
         nodeRef: RefObject<THREE.Object3D>;
     }
 >;
@@ -23,6 +24,7 @@ export default function Sprite({
     sheet,
     state: initialState = 'default',
     flipX: initialFlipX,
+    rotate,
     color: initialColor,
     opacity: initialOpacity,
     offset: initialOffset,
@@ -45,6 +47,7 @@ export default function Sprite({
         setScale,
         setFlipX,
         flipX,
+        rotate,
         nodeRef,
     });
 
@@ -58,6 +61,7 @@ export default function Sprite({
             opacity={opacity}
             offset={offset}
             scale={scale}
+            rotate={rotate}
             {...graphicProps}
         />
     );

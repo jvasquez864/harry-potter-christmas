@@ -29,6 +29,7 @@ export type MovingEvent = PubSubEvent<
 export type MoveableRef = ComponentRef<
     'Moveable',
     {
+        getMoveDirection: () => MoveDirection;
         canMove: (position?: Position) => boolean;
         isMoving: () => boolean;
         blockMovement: (delayMs: number) => Promise<any>;
@@ -52,6 +53,9 @@ export default function Moveable({ isStatic = false }: Props) {
     const movingDirection = useRef<MoveDirection>([0, 0]);
 
     const api = useComponentRegistry<MoveableRef>('Moveable', {
+        getMoveDirection() {
+            return movingDirection.current;
+        },
         canMove(position) {
             if (isStatic) return false;
             if (position && !testCollision(position)) return false;

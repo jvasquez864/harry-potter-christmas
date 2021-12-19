@@ -1,4 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
+import Projectile from '../entities/Projectile';
+import { ShootOptions } from './Attackable';
 import { SceneExitEvent, ScenePreExitEvent } from './Scene';
 import useGame from './useGame';
 import { SceneStoreProvider } from './useGameObjectStore';
@@ -13,6 +15,7 @@ export interface SceneManagerContextValue {
     resetScene: () => Promise<void>;
     setSceneState: (key: string, value: any) => void;
     getSceneState: (key: string) => any;
+    shoot: (options: ShootOptions) => void;
 }
 
 export const SceneManagerContext = React.createContext<SceneManagerContextValue>(null);
@@ -30,6 +33,7 @@ export default function SceneManager({ defaultScene, children }: Props) {
     const prevLevel = useRef(-1);
     const currentLevel = useRef(Number(initialLevel));
     const sceneStore = useRef(new Map<string, any>());
+    const [projectiles, setProjectiles] = useState<ShootOptions[]>([]);
     const api = useMemo<SceneManagerContextValue>(
         () => ({
             currentScene,
@@ -83,13 +87,26 @@ export default function SceneManager({ defaultScene, children }: Props) {
             getSceneState(key) {
                 return sceneStore.current.get(`${currentScene}.${key}`);
             },
+            shoot(options: ShootOptions) {
+                const newProjectiles = [...projectiles, options];
+                setProjectiles(newProjectiles);
+            },
         }),
-        [currentScene, currentLevel, publish]
+        [currentScene, currentLevel, publish, projectiles]
     );
 
     return (
         <SceneManagerContext.Provider value={api}>
-            <SceneStoreProvider>{children}</SceneStoreProvider>
+            <SceneStoreProvider>
+                {children}
+                {projectiles.map((options, i) => (
+                    <Projectile
+                        key={i}
+                        {...options.position}
+                        direction={options.direction}
+                    />
+                ))}
+            </SceneStoreProvider>
         </SceneManagerContext.Provider>
     );
 }

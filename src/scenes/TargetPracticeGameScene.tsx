@@ -16,6 +16,10 @@ import MemoryMatchOverlay from '../@core/MemoryMatchOverlay';
 import useSceneManager from '../@core/useSceneManager';
 import { PubSubEvent } from '../@core/utils/createPubSub';
 import SpellcastingOverlay from '../@core/SpellcastingOverlay';
+import Voldemort from '../entities/Voldemort';
+import HostileNPC from '../entities/HostileNPC';
+import Dementor from '../entities/Dementor';
+import Nagini from '../entities/Nagini';
 
 const mapData = mapDataString(`
 # # # # # # # # # # # # # # # # #
@@ -31,9 +35,28 @@ const mapData = mapDataString(`
 `);
 
 export default function TargetPracticeGameScene() {
+    const { openDialog } = useGame();
+    const [isAttacking, setIsAttacking] = useState(false);
     const onGameEnd = useCallback(() => {
-        console.log('g');
+        setIsAttacking(false);
     }, []);
+
+    const onAttack = useCallback(() => {
+        openDialog({
+            dialog: [
+                {
+                    text: 'Aggghhh',
+                    character: 'voldemort',
+                },
+            ],
+            onClose: () => setIsAttacking(true),
+        });
+    }, [openDialog]);
+
+    const onAttacked = useCallback(() => {
+        console.log('attacked');
+    }, []);
+
     return (
         <>
             <GameObject name="map">
@@ -51,8 +74,10 @@ export default function TargetPracticeGameScene() {
                 />
             </GameObject>
 
-            <Player x={2} y={5} />
-            {false && (
+            <Player x={8} y={1} onAttacked={onAttacked} />
+            <Voldemort x={8} y={5} onAttacked={onAttack} />
+            <Nagini x={9} y={5} onAttacked={onAttack} />
+            {isAttacking && (
                 <SpellcastingOverlay
                     startingLevel={3}
                     maxLevel={5}

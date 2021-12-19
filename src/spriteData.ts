@@ -30,6 +30,50 @@ const spriteData: { [index: string]: SpriteProps } = {
             ],
         },
     },
+    'voldemort-player': {
+        src: './assets/voldemort-player.png',
+        frameWidth: 20,
+        frameHeight: 20,
+        frameTime: 300,
+        sheet: {
+            default: [[0, 2]],
+            walk: [
+                [1, 2],
+                [2, 2],
+            ],
+            action: [
+                [0, 1],
+                [2, 1],
+            ],
+        },
+    },
+    nagini: {
+        src: './assets/nagini.png',
+        frameWidth: 20,
+        frameHeight: 20,
+        frameTime: 300,
+        sheet: {
+            default: [[0, 2]],
+            walk: [
+                [1, 2],
+                [2, 2],
+            ],
+            action: [
+                [0, 1],
+                [2, 1],
+            ],
+        },
+    },
+
+    projectile: {
+        src: './assets/projectile.png',
+        frameWidth: 32,
+        frameHeight: 32,
+        frameTime: 300,
+        sheet: {
+            default: [[0, 0]],
+        },
+    },
     objects: {
         src: './assets/objects2.png',
         frameWidth: 32,
