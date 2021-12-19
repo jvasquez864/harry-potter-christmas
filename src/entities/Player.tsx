@@ -16,9 +16,19 @@ interface PlayerProps extends GameObjectProps {
     canWalk?: boolean;
     onAttacked?: () => void;
 }
-export default function Player({ canWalk, onAttacked, ...props }: PlayerProps) {
+const Player = React.forwardRef(function PlayerInner({
+    canWalk,
+    onAttacked,
+    ...props
+}: PlayerProps) {
     return (
-        <GameObject name="player" displayName="Player" layer="character" {...props}>
+        <GameObject
+            // ref={ref}
+            name="player"
+            displayName="Player"
+            layer="character"
+            {...props}
+        >
             {canWalk && <Moveable />}
             <Interactable />
             <Attackable />
@@ -31,7 +41,7 @@ export default function Player({ canWalk, onAttacked, ...props }: PlayerProps) {
             <DialogScript />
         </GameObject>
     );
-}
+});
 
 Player.defaultProps = {
     canWalk: true,
@@ -39,3 +49,5 @@ Player.defaultProps = {
         /* No-op */
     },
 };
+
+export default Player;

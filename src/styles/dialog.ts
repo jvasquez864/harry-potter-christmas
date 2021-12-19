@@ -202,3 +202,24 @@ export const spellCastingLifeImg = () => css`
     }
     margin-right: 40px;
 `;
+export const harryHealthImg = () => css`
+    width: 32px;
+    height: 32px;
+    margin-right: 16px;
+`;
+
+export const hubIcon = () => css`
+    width: 100px;
+    height: 100px;
+`;
+
+export const healthOverlay = (width: number) => css`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: ${width}px;
+
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+    /* transform: translateY(1px); */
+`;

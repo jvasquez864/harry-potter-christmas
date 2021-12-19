@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { useFrame, useThree } from 'react-three-fiber';
+import useClampPositionToViewport from '../@core/useClampPositionToViewport';
 import * as THREE from 'three';
 import { Position } from '../@core/GameObject';
 import { SceneReadyEvent } from '../@core/Scene';
@@ -25,52 +26,19 @@ function getRoundedCameraPosition(camera: THREE.Camera) {
 
 export default function CameraFollowScript() {
     const {
-        mapSize: [mapWidth, mapHeight],
         settings: { cameraZoom },
     } = useGame();
     const { nodeRef } = useGameObject();
     const { camera } = useThree();
     const isReady = useRef(false);
     const zoomLevel = useRef(0);
+    const clampPositionToViewport = useClampPositionToViewport();
 
     const [cameraZoomLevels] = useState(() => [
         cameraZoom,
         cameraZoom * 1.5,
         cameraZoom * 2,
     ]);
-
-    const clampPositionToViewport = useCallback(
-        (position: Position) => {
-            const extraTopSpace = 3;
-            const extraBottomSpace = 3;
-            const extraHorizontalSpace = 6;
-            const viewport = new THREE.Vector3(1, 1)
-                .unproject(camera)
-                .sub(camera.position);
-            let { x, y } = position;
-
-            if (mapWidth > viewport.x * 2 - extraHorizontalSpace * 2) {
-                x = Math.max(
-                    viewport.x - 0.5 - extraHorizontalSpace,
-                    Math.min(x, mapWidth - viewport.x - 0.5 + extraHorizontalSpace)
-                );
-            } else {
-                x = mapWidth / 2 - 0.5;
-            }
-
-            if (mapHeight > viewport.y * 2 - extraTopSpace - extraBottomSpace) {
-                y = Math.max(
-                    viewport.y - 0.5 - extraBottomSpace,
-                    Math.min(y, mapHeight - viewport.y - 0.5 + extraTopSpace)
-                );
-            } else {
-                y = mapHeight / 2 - 0.5;
-            }
-
-            return { x, y };
-        },
-        [camera, mapHeight, mapWidth]
-    );
 
     useGameEvent<SceneReadyEvent>('scene-ready', () => {
         isReady.current = true;

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useGame from '../@core/useGame';
 import { dialogs } from '../dialogs/spellcasting';
 import * as THREE from 'three';
@@ -20,6 +20,8 @@ import Voldemort from '../entities/Voldemort';
 import HostileNPC from '../entities/HostileNPC';
 import Dementor from '../entities/Dementor';
 import Nagini from '../entities/Nagini';
+import { healthOverlay } from 'src/styles/dialog';
+import HealthOverlay from '../@core/HealthOverlay';
 
 const mapData = mapDataString(`
 # # # # # # # # # # # # # # # # #
@@ -37,6 +39,7 @@ const mapData = mapDataString(`
 export default function TargetPracticeGameScene() {
     const { openDialog } = useGame();
     const [isAttacking, setIsAttacking] = useState(false);
+    const playerRef = useRef(null);
     const onGameEnd = useCallback(() => {
         setIsAttacking(false);
     }, []);
@@ -74,7 +77,7 @@ export default function TargetPracticeGameScene() {
                 />
             </GameObject>
 
-            <Player x={8} y={1} onAttacked={onAttacked} />
+            <Player ref={playerRef} x={8} y={1} onAttacked={onAttacked} />
             <Voldemort x={8} y={5} onAttacked={onAttack} />
             <Nagini x={9} y={5} onAttacked={onAttack} />
             {isAttacking && (
@@ -86,6 +89,7 @@ export default function TargetPracticeGameScene() {
                     spellName="stupefy"
                 />
             )}
+            <HealthOverlay />
         </>
     );
 }
