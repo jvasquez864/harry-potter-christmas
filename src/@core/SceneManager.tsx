@@ -15,7 +15,8 @@ export interface SceneManagerContextValue {
     resetScene: () => Promise<void>;
     setSceneState: (key: string, value: any) => void;
     getSceneState: (key: string) => any;
-    shoot: (options: ShootOptions) => void;
+    shoot: (options: ShootOptions[]) => void;
+    removeProjectile: (id: string) => void;
 }
 
 export const SceneManagerContext = React.createContext<SceneManagerContextValue>(null);
@@ -87,9 +88,12 @@ export default function SceneManager({ defaultScene, children }: Props) {
             getSceneState(key) {
                 return sceneStore.current.get(`${currentScene}.${key}`);
             },
-            shoot(options: ShootOptions) {
-                const newProjectiles = [...projectiles, options];
+            shoot(options: ShootOptions[]) {
+                const newProjectiles = [...projectiles, ...options];
                 setProjectiles(newProjectiles);
+            },
+            removeProjectile(id: string) {
+                setProjectiles(items => items.filter(obj => obj.id !== id));
             },
         }),
         [currentScene, currentLevel, publish, projectiles]
@@ -101,9 +105,11 @@ export default function SceneManager({ defaultScene, children }: Props) {
                 {children}
                 {projectiles.map((options, i) => (
                     <Projectile
-                        key={i}
+                        key={options.id}
+                        id={options.id}
                         {...options.position}
                         direction={options.direction}
+                        isHostile={options.isHostile}
                     />
                 ))}
             </SceneStoreProvider>

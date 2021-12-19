@@ -1,41 +1,87 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Moveable, { MoveDirection, MoveableRef, CannotMoveEvent } from '../@core/Moveable';
 import useGameLoop from '../@core/useGameLoop';
 import Collider, { CollisionEvent } from '../@core/Collider';
-import GameObject, { GameObjectProps } from '../@core/GameObject';
+import GameObject, { GameObjectProps, Position } from '../@core/GameObject';
 import Interactable, { InteractionEvent } from '../@core/Interactable';
 import Sprite, { SpriteRef } from '../@core/Sprite';
 import useGameObject from '../@core/useGameObject';
 import useGameObjectEvent from '../@core/useGameObjectEvent';
 import waitForMs from '../@core/utils/waitForMs';
 import spriteData from '../spriteData';
+import useSceneManager from '../@core/useSceneManager';
+import usePathfinding from '../@core/usePathfinding';
+import useLineOfSightPath from '../@core/useLineOfSightPath';
 
 interface ProjectileScriptProps extends GameObjectProps {
     direction: MoveDirection;
+    id: string;
+    isHostile?: boolean;
     destroySelf?: () => void;
 }
 type ProjectileProps = GameObjectProps & ProjectileScriptProps;
 
-function ProjectileScript({ direction, destroySelf }: ProjectileScriptProps) {
-    const { getComponent, getRef } = useGameObject();
+function ProjectileScript({ direction, id }: ProjectileScriptProps) {
+    const { getComponent, getRef, transform } = useGameObject();
     const workState = useRef(false);
-    const [lastMoveTime, setLastMoveTime] = useState(-1);
+    const [lastMoveTime, setLastMoveTime] = useState(0);
+    const { removeProjectile } = useSceneManager();
+    const [path, setPath] = useState<Position[]>([]);
+    const findPath = usePathfinding();
+    const lineOfSightPath = useLineOfSightPath();
 
     useGameObjectEvent<CannotMoveEvent>('cannot-move', () => {
-        console.log('hit something');
+        // Less laggy if i just set the object to disabled
+        getRef().setDisabled(true);
+        // removeProjectile(id);
+    });
+
+    useGameObjectEvent<CollisionEvent>('collision', () => {
         getRef().setDisabled(true);
     });
 
-    useGameLoop(time => {
-        if (lastMoveTime !== -1 && time - lastMoveTime < 800) {
-            return;
-        }
+    // useGameLoop(time => {
+    //     if (time - lastMoveTime < 800) {
+    //         return;
+    //     }
 
-        setLastMoveTime(time);
-        const { x, y } = getRef().transform;
-        const nextPosition = { x: x + direction[0], y: y + direction[1] };
-        getComponent<MoveableRef>('Moveable')?.move(nextPosition);
-    });
+    //     setLastMoveTime(time);
+    //     const { x, y } = getRef().transform;
+    //     const nextPosition = { x: x + direction[0] * 5, y: y + direction[1] * 5 };
+    //     getComponent<MoveableRef>('Moveable')?.move(nextPosition);
+    // });
+
+    // Trigger movement
+    useEffect(() => {
+        try {
+            const nextPath = lineOfSightPath();
+
+            if (path.length > 0) {
+                nextPath.unshift(transform);
+            }
+            setPath(nextPath);
+        } catch {
+            // pointer out of bounds
+            setPath([]);
+        }
+    }, [findPath, path.length, transform, lineOfSightPath]);
+
+    // traverse the path
+    useEffect(() => {
+        if (!path.length) return;
+
+        const [nextPosition] = path;
+
+        (async () => {
+            const anyAction = await getComponent<MoveableRef>('Moveable')?.move(
+                nextPosition
+            );
+            if (anyAction) {
+                // proceed with next step in path
+                setPath(current => current.slice(1));
+            }
+        })();
+    }, [path, getComponent]);
 
     // useGameObjectEvent<InteractionEvent>('interaction', () => {
     //     workState.current = !workState.current;
@@ -52,14 +98,20 @@ function ProjectileScript({ direction, destroySelf }: ProjectileScriptProps) {
     return null;
 }
 
-export default function Projectile({ direction, ...props }: ProjectileProps) {
+export default function Projectile({
+    direction,
+    id,
+    isHostile,
+    ...props
+}: ProjectileProps) {
+    const spriteInfo = isHostile ? spriteData['enemy-projectile'] : spriteData.projectile;
     return (
         <GameObject {...props}>
-            <Sprite {...spriteData.projectile} rotate={Boolean(direction[1])} />
-            <Moveable />
-            <Collider isTrigger />
+            <Sprite {...spriteInfo} rotate={Boolean(direction[1])} />
+            <Moveable initialMoveDirection={direction} isProjectile />
+            <Collider />
             <Interactable />
-            <ProjectileScript direction={direction} />
+            <ProjectileScript id={id} direction={direction} />
         </GameObject>
     );
 }

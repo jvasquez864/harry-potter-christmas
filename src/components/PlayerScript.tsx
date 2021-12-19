@@ -27,7 +27,7 @@ export default function PlayerScript({ canWalk, onAttacked }: PlayerProps) {
     const findPath = usePathfinding();
     const [path, setPath] = useState<Position[]>([]);
     const [pathOverlayEnabled, setPathOverlayEnabled] = useState(true);
-    const [lastFireTime, setLastFireTime] = useState(-1);
+    const [lastFireTime, setLastFireTime] = useState(0);
 
     useGameObjectEvent<AttackEvent>('attacked', () => {
         onAttacked();
@@ -36,12 +36,11 @@ export default function PlayerScript({ canWalk, onAttacked }: PlayerProps) {
     const handleProjectileFile = useCallback(
         time => {
             // Limit firing to once every 1.5 secs
-            if (lastFireTime !== -1 && time - lastFireTime < 800) {
+            if (time - lastFireTime < 800) {
                 return;
             }
             setLastFireTime(time);
-            console.log('in playter script fire');
-            getComponent<AttackableRef>('Attackable')?.shoot();
+            getComponent<AttackableRef>('Attackable')?.shoot(null, time);
         },
         [getComponent, lastFireTime]
     );
@@ -113,10 +112,7 @@ export default function PlayerScript({ canWalk, onAttacked }: PlayerProps) {
 
     const resolvePointerInteraction = useCallback(() => {
         try {
-            (async () => {
-                // try interaction on last step of path
-                await getComponent<AttackableRef>('Attackable')?.attack(pointer);
-            })();
+            getComponent<AttackableRef>('Attackable')?.attack(pointer);
         } catch {
             // pointer out of bounds
             setPath([]);

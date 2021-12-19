@@ -17,7 +17,18 @@ import dialog, {
 import useAsset from './useAsset';
 import { Position } from './GameObject';
 
-export default function HealthOverlay({ children, ...props }: HTMLProps) {
+interface HealthOverlayProps extends HTMLProps {
+    harryHealth: number;
+    voldemortHealth: number;
+    naginiHealth: number;
+}
+export default function HealthOverlay({
+    children,
+    harryHealth,
+    voldemortHealth,
+    naginiHealth,
+    ...props
+}: HealthOverlayProps) {
     const { paused, dialogInfo, currentDialogPageIndex } = useGame();
     const node = useRef<HTMLDivElement>();
     const { camera } = useThree();
@@ -41,7 +52,7 @@ export default function HealthOverlay({ children, ...props }: HTMLProps) {
                 <div>
                     <img css={hubIcon()} src="../assets/harry-hub.png" alt="harry hub" />
                     <div>
-                        {[...Array(3)].map(val => (
+                        {[...Array(harryHealth)].map(val => (
                             <img
                                 css={harryHealthImg()}
                                 key={val}
@@ -58,7 +69,7 @@ export default function HealthOverlay({ children, ...props }: HTMLProps) {
                         alt="voldemort hub"
                     />
                     <div>
-                        {[...Array(3)].map(val => (
+                        {[...Array(voldemortHealth)].map(val => (
                             <img
                                 css={harryHealthImg()}
                                 key={val}

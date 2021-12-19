@@ -20,8 +20,9 @@ import Voldemort from '../entities/Voldemort';
 import HostileNPC from '../entities/HostileNPC';
 import Dementor from '../entities/Dementor';
 import Nagini from '../entities/Nagini';
-import { healthOverlay } from 'src/styles/dialog';
 import HealthOverlay from '../@core/HealthOverlay';
+import { ShootOptions } from '../@core/Attackable';
+import useGameLoop from '../@core/useGameLoop';
 
 const mapData = mapDataString(`
 # # # # # # # # # # # # # # # # #
@@ -39,7 +40,12 @@ const mapData = mapDataString(`
 export default function TargetPracticeGameScene() {
     const { openDialog } = useGame();
     const [isAttacking, setIsAttacking] = useState(false);
-    const playerRef = useRef(null);
+    const { shoot } = useSceneManager();
+    const [lastEnemyProjectileTime, setLastEnemyProjectileTime] = useState(-1);
+    const [harryHealth, setHarryHealth] = useState(3);
+    const [voldemortHealth, setVoldemortHealth] = useState(6);
+    const [naginiHealth, setNaginiHealth] = useState(6);
+
     const onGameEnd = useCallback(() => {
         setIsAttacking(false);
     }, []);
@@ -60,6 +66,27 @@ export default function TargetPracticeGameScene() {
         console.log('attacked');
     }, []);
 
+    const enemyProjectiles = useCallback((time: number) => {
+        const projectiles: ShootOptions[] = [];
+        for (let i = 1; i < mapData[0].length - 1; i += 2) {
+            projectiles.push({
+                direction: [0, -1],
+                position: { x: i, y: 8 },
+                id: `${i}-${8}-${time}`,
+                isHostile: true,
+            });
+        }
+        return projectiles;
+    }, []);
+
+    useGameLoop(time => {
+        if (lastEnemyProjectileTime !== -1 && time - lastEnemyProjectileTime < 6000) {
+            return;
+        }
+        setLastEnemyProjectileTime(time);
+        shoot(enemyProjectiles(time));
+    });
+
     return (
         <>
             <GameObject name="map">
@@ -77,7 +104,7 @@ export default function TargetPracticeGameScene() {
                 />
             </GameObject>
 
-            <Player ref={playerRef} x={8} y={1} onAttacked={onAttacked} />
+            <Player x={8} y={1} onAttacked={onAttacked} />
             <Voldemort x={8} y={5} onAttacked={onAttack} />
             <Nagini x={9} y={5} onAttacked={onAttack} />
             {isAttacking && (
@@ -89,7 +116,11 @@ export default function TargetPracticeGameScene() {
                     spellName="stupefy"
                 />
             )}
-            <HealthOverlay />
+            <HealthOverlay
+                harryHealth={harryHealth}
+                voldemortHealth={voldemortHealth}
+                naginiHealth={naginiHealth}
+            />
         </>
     );
 }

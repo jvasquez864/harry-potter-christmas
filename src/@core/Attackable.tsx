@@ -10,6 +10,8 @@ import useSceneManager from './useSceneManager';
 export interface ShootOptions {
     direction: MoveDirection;
     position: Position;
+    isHostile?: boolean;
+    id: string;
 }
 export type ShootEvent = PubSubEvent<'shoot', ShootOptions>;
 export type AttackEvent = PubSubEvent<'attacked', GameObjectRef>;
@@ -19,7 +21,7 @@ export type AttackableRef = ComponentRef<
     {
         attack: (position: Position) => Promise<boolean>;
         onAttack: (ref: GameObjectRef) => Promise<void>;
-        shoot: () => Promise<void>;
+        shoot: (options?: ShootOptions[], time?: number) => Promise<void>;
     }
 >;
 
@@ -49,20 +51,22 @@ export default function InteracAttackabletable() {
                 canInteract.current = true;
             }
         },
-        async shoot() {
+        async shoot(options?: ShootOptions[], time?: number) {
+            if (options) {
+                sceneShoot(options);
+                return;
+            }
             const moveable = getComponent<MoveableRef>('Moveable');
             const projectileDirection = moveable.getMoveDirection();
-            const { x, y } = getRef().transform;
-            const objs = findGameObjectsByXY(x, y);
-            console.log(objs);
-            const options: ShootOptions = {
+            const ref = getRef();
+            const { x, y } = ref.transform;
+
+            const defaultOoptions: ShootOptions = {
                 direction: projectileDirection,
-                position: {
-                    x: x + projectileDirection[0],
-                    y: y + projectileDirection[1],
-                },
+                position: { x, y },
+                id: `${x}-${y}-${time}`,
             };
-            sceneShoot(options);
+            sceneShoot([defaultOoptions]);
         },
     });
 

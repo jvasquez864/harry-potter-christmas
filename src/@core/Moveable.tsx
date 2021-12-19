@@ -39,9 +39,15 @@ export type MoveableRef = ComponentRef<
 
 interface Props {
     isStatic?: boolean;
+    initialMoveDirection?: MoveDirection;
+    isProjectile?: boolean;
 }
 
-export default function Moveable({ isStatic = false }: Props) {
+export default function Moveable({
+    isStatic = false,
+    initialMoveDirection,
+    isProjectile,
+}: Props) {
     const {
         settings: { movementDuration },
     } = useGame();
@@ -50,7 +56,7 @@ export default function Moveable({ isStatic = false }: Props) {
     const testCollision = useCollisionTest();
     const nextPosition = useRef({ x: transform.x, y: transform.y });
     const facingDirection = useRef<Direction>(1);
-    const movingDirection = useRef<MoveDirection>([0, 0]);
+    const movingDirection = useRef<MoveDirection>(initialMoveDirection);
 
     const api = useComponentRegistry<MoveableRef>('Moveable', {
         getMoveDirection() {
@@ -107,7 +113,7 @@ export default function Moveable({ isStatic = false }: Props) {
                 targets: nodeRef.current.position,
                 x: [fromX, toX],
                 y: [fromY, toY],
-                duration: movementDuration,
+                duration: isProjectile ? movementDuration * 2 : movementDuration,
                 easing: 'linear',
                 begin() {
                     if (dirX) transform.setX(targetPosition.x);
@@ -141,3 +147,7 @@ export default function Moveable({ isStatic = false }: Props) {
 
     return null;
 }
+
+Moveable.defaultProps = {
+    initialMoveDirection: [0, 0],
+};
