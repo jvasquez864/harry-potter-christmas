@@ -18,7 +18,6 @@ import { PubSubEvent } from '../@core/utils/createPubSub';
 import SpellcastingOverlay from '../@core/SpellcastingOverlay';
 import Voldemort from '../entities/Voldemort';
 import HostileNPC from '../entities/HostileNPC';
-import Dementor from '../entities/Dementor';
 import Nagini from '../entities/Nagini';
 import HealthOverlay from '../@core/HealthOverlay';
 import { ShootOptions } from '../@core/Attackable';
@@ -66,6 +65,27 @@ export default function TargetPracticeGameScene() {
         console.log('attacked');
     }, []);
 
+    const onNaginiShot = useCallback(() => {
+        setNaginiHealth(health => {
+            const newHealth = health - 1;
+            if (newHealth <= 0) {
+                // openDialog()
+            }
+            return health - 1;
+        });
+    }, []);
+
+    const onVoldemortShot = useCallback(() => {
+        setNaginiHealth(naginiHP => {
+            if (naginiHP > 0) {
+                // openDialog()
+                return naginiHP;
+            }
+            setVoldemortHealth(health => health - 1);
+            return naginiHP;
+        });
+    }, []);
+
     const enemyProjectiles = useCallback((time: number) => {
         const projectiles: ShootOptions[] = [];
         for (let i = 1; i < mapData[0].length - 1; i += 2) {
@@ -80,7 +100,7 @@ export default function TargetPracticeGameScene() {
     }, []);
 
     useGameLoop(time => {
-        if (lastEnemyProjectileTime !== -1 && time - lastEnemyProjectileTime < 6000) {
+        if (lastEnemyProjectileTime !== -1 && time - lastEnemyProjectileTime < 20000) {
             return;
         }
         setLastEnemyProjectileTime(time);
@@ -105,8 +125,16 @@ export default function TargetPracticeGameScene() {
             </GameObject>
 
             <Player x={8} y={1} onAttacked={onAttacked} />
-            <Voldemort x={8} y={5} onAttacked={onAttack} />
-            <Nagini x={9} y={5} onAttacked={onAttack} />
+            <Voldemort
+                x={8}
+                y={5}
+                onAttacked={onAttack}
+                patrol={naginiHealth === 0}
+                onShot={onVoldemortShot}
+            />
+            {naginiHealth > 0 && (
+                <Nagini x={9} y={5} onAttacked={onAttack} onShot={onNaginiShot} />
+            )}
             {isAttacking && (
                 <SpellcastingOverlay
                     startingLevel={3}

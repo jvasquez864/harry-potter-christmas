@@ -7,9 +7,11 @@ import useWindowSize from './useWindowSize';
 import dialog, {
     characterImage,
     dialogText,
+    enemyHub,
     flash,
     flashingArrow,
     harryHealthImg,
+    healthContainer,
     healthOverlay,
     hubIcon,
     spellCastingLifeImg,
@@ -34,6 +36,9 @@ export default function HealthOverlay({
     const { camera } = useThree();
     const [width] = useWindowSize();
     const [position, setPosition] = useState<Position>(camera.position);
+    const [maxHarryHealth] = useState(harryHealth);
+    const [maxNaginiHealth] = useState(naginiHealth);
+    const [maxVoldemortHealth] = useState(voldemortHealth);
     useFrame(() => {
         const { x, y } = camera.position;
         setPosition({ x, y });
@@ -51,32 +56,69 @@ export default function HealthOverlay({
             <div css={healthOverlay(width * 0.9)}>
                 <div>
                     <img css={hubIcon()} src="../assets/harry-hub.png" alt="harry hub" />
-                    <div>
-                        {[...Array(harryHealth)].map(val => (
-                            <img
-                                css={harryHealthImg()}
-                                key={val}
-                                alt="health"
-                                src="../assets/heart-filled.png"
-                            />
-                        ))}
+                    <div css={healthContainer()}>
+                        {[...Array(maxHarryHealth)].map((_, i) => {
+                            const isLifeFilled = i < harryHealth;
+                            const src = isLifeFilled
+                                ? '../assets/heart-filled.png'
+                                : '../assets/heart-outline.png';
+                            return (
+                                <img
+                                    css={harryHealthImg()}
+                                    key={i}
+                                    alt="health"
+                                    src={src}
+                                />
+                            );
+                        })}
                     </div>
                 </div>
                 <div>
-                    <img
-                        css={hubIcon()}
-                        src="../assets/voldemort-hub.png"
-                        alt="voldemort hub"
-                    />
-                    <div>
-                        {[...Array(voldemortHealth)].map(val => (
-                            <img
-                                css={harryHealthImg()}
-                                key={val}
-                                alt="health"
-                                src="../assets/heart-filled.png"
-                            />
-                        ))}
+                    <div css={enemyHub()}>
+                        <img
+                            css={hubIcon()}
+                            src="../assets/voldemort-hub.png"
+                            alt="voldemort hub"
+                        />
+                        <div css={healthContainer()}>
+                            {[...Array(maxVoldemortHealth)].map((_, i) => {
+                                const isLifeFilled = i < voldemortHealth;
+                                const src = isLifeFilled
+                                    ? '../assets/dark-heart-filled.png'
+                                    : '../assets/heart-outline.png';
+                                return (
+                                    <img
+                                        css={harryHealthImg()}
+                                        key={i}
+                                        alt="health"
+                                        src={src}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </div>
+                    <div css={enemyHub()}>
+                        <img
+                            css={hubIcon(true)}
+                            src="../assets/nagini-avatar.png"
+                            alt="nagini hub"
+                        />
+                        <div css={healthContainer(true)}>
+                            {[...Array(maxNaginiHealth)].map((_, i) => {
+                                const isLifeFilled = i < naginiHealth;
+                                const src = isLifeFilled
+                                    ? '../assets/dark-heart-filled.png'
+                                    : '../assets/heart-outline.png';
+                                return (
+                                    <img
+                                        css={harryHealthImg(true)}
+                                        key={i}
+                                        alt="health"
+                                        src={src}
+                                    />
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>

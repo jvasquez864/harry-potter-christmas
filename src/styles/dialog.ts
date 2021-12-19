@@ -202,15 +202,28 @@ export const spellCastingLifeImg = () => css`
     }
     margin-right: 40px;
 `;
-export const harryHealthImg = () => css`
-    width: 32px;
-    height: 32px;
+export const harryHealthImg = (mini?: boolean) => css`
+    width: ${mini ? 20 : 32}px;
+    height: ${mini ? 20 : 32}px;
     margin-right: 16px;
 `;
 
-export const hubIcon = () => css`
-    width: 100px;
-    height: 100px;
+export const hubIcon = (mini?: boolean) => css`
+    width: ${mini ? 50 : 100}px;
+    height: ${mini ? 50 : 100}px;
+    margin-right: 16px;
+`;
+
+export const enemyHub = () => css`
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 16px;
+`;
+
+export const healthContainer = (mini?: boolean) => css`
+    display: flex;
+    flex-wrap: wrap;
+    width: ${mini ? 110 : 150}px;
 `;
 
 export const healthOverlay = (width: number) => css`

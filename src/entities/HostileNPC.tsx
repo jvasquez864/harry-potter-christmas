@@ -19,11 +19,13 @@ import Attackable from '../@core/Attackable';
 interface HostileNPCProps extends GameObjectProps {
     name: string;
     onAttacked: () => void;
+    onShot: () => void;
     patrol?: boolean;
 }
 export default function HostileNPC({
     name,
     onAttacked,
+    onShot,
     patrol,
     ...props
 }: HostileNPCProps) {
@@ -38,7 +40,7 @@ export default function HostileNPC({
             <CharacterScript>
                 <Sprite {...spriteProps} />
             </CharacterScript>
-            <HostileNPCScript patrol={patrol} onAttacked={onAttacked} />
+            <HostileNPCScript patrol={patrol} onAttacked={onAttacked} onShot={onShot} />
             <DialogScript />
         </GameObject>
     );

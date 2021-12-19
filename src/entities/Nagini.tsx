@@ -14,6 +14,7 @@ import HostileNPC from './HostileNPC';
 
 interface NaginiProps extends GameObjectProps {
     onAttacked: () => void;
+    onShot: () => void;
 }
 export default function Nagini(props: NaginiProps) {
     return <HostileNPC name="nagini" patrol {...props} />;

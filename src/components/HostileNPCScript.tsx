@@ -13,16 +13,18 @@ import usePointerClick from '../@core/usePointerClick';
 import tileUtils from '../@core/utils/tileUtils';
 import PlayerPathOverlay from './PlayerPathOverlay';
 import useGameObjectEvent from '../@core/useGameObjectEvent';
-import { AttackEvent } from 'src/@core/Attackable';
+import { AttackEvent, WasShotEvent } from 'src/@core/Attackable';
 
 interface HostileNPCScriptProps {
     canWalk?: boolean;
     patrol?: boolean;
     onAttacked: () => void;
+    onShot: () => void;
 }
 export default function HostileNPCScript({
     canWalk,
     patrol,
+    onShot,
     onAttacked,
 }: HostileNPCScriptProps) {
     const { getComponent, transform } = useGameObject();
@@ -34,6 +36,10 @@ export default function HostileNPCScript({
 
     useGameObjectEvent<AttackEvent>('attacked', () => {
         onAttacked();
+    });
+
+    useGameObjectEvent<WasShotEvent>('was-shot', () => {
+        onShot();
     });
 
     useGameLoop(time => {

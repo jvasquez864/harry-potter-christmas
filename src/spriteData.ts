@@ -69,7 +69,7 @@ const spriteData: { [index: string]: SpriteProps } = {
         src: './assets/projectile.png',
         frameWidth: 32,
         frameHeight: 32,
-        frameTime: 300,
+        frameTime: 600,
         sheet: {
             default: [[0, 0]],
         },
@@ -78,7 +78,7 @@ const spriteData: { [index: string]: SpriteProps } = {
         src: './assets/enemy-projectile.png',
         frameWidth: 32,
         frameHeight: 32,
-        frameTime: 300,
+        frameTime: 600,
         sheet: {
             default: [[0, 0]],
         },

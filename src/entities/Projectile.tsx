@@ -12,6 +12,8 @@ import spriteData from '../spriteData';
 import useSceneManager from '../@core/useSceneManager';
 import usePathfinding from '../@core/usePathfinding';
 import useLineOfSightPath from '../@core/useLineOfSightPath';
+import { AttackableRef, WasShotEvent } from '../@core/Attackable';
+import useGame from '../@core/useGame';
 
 interface ProjectileScriptProps extends GameObjectProps {
     direction: MoveDirection;
@@ -23,6 +25,7 @@ type ProjectileProps = GameObjectProps & ProjectileScriptProps;
 
 function ProjectileScript({ direction, id }: ProjectileScriptProps) {
     const { getComponent, getRef, transform } = useGameObject();
+    const { findGameObjectsByXY } = useGame();
     const workState = useRef(false);
     const [lastMoveTime, setLastMoveTime] = useState(0);
     const { removeProjectile } = useSceneManager();
@@ -30,13 +33,24 @@ function ProjectileScript({ direction, id }: ProjectileScriptProps) {
     const findPath = usePathfinding();
     const lineOfSightPath = useLineOfSightPath();
 
-    useGameObjectEvent<CannotMoveEvent>('cannot-move', () => {
-        // Less laggy if i just set the object to disabled
+    useGameObjectEvent<CannotMoveEvent>('cannot-move', async position => {
+        //  Triggered by projectile moving onto something
+        const { x, y } = position;
+        const attackables = findGameObjectsByXY(x, y).map(obj =>
+            obj.getComponent<AttackableRef>('Attackable')
+        );
+        attackables.forEach(attackable => {
+            attackable?.onShot();
+        });
+
+        // Setting to disabled is actually more performant than removing the projectile
         getRef().setDisabled(true);
         // removeProjectile(id);
     });
 
-    useGameObjectEvent<CollisionEvent>('collision', () => {
+    useGameObjectEvent<CollisionEvent>('collision', async () => {
+        //  Triggered by projectile being hit by something (i.e shooting two projectiles at eachother, or walking into one)
+        // await publish<WasShotEvent>('was-shot');
         getRef().setDisabled(true);
     });
 

@@ -14,6 +14,8 @@ import HostileNPC from './HostileNPC';
 
 interface VoldemortProps extends GameObjectProps {
     onAttacked: () => void;
+    onShot: () => void;
+    patrol?: boolean;
 }
 export default function Voldemort(props: VoldemortProps) {
     return <HostileNPC name="voldemort-player" {...props} />;
