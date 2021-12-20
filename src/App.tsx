@@ -15,7 +15,7 @@ import MemoryMatchGameScene from './scenes/MemoryMatchGameScene';
 import soundData from './soundData';
 import spriteData from './spriteData';
 import globalStyles from './styles/global';
-import TargetPracticeGameScene from './scenes/TargetPracticeGameScene';
+import BattleGameScene from './scenes/BattleGameScene';
 
 const styles = {
     root: (width: number, height: number) => css`
@@ -42,7 +42,7 @@ export default function App() {
             <div css={styles.root(width, height)}>
                 <Game cameraZoom={80}>
                     <AssetLoader urls={urls} placeholder="Loading assets ...">
-                        <SceneManager defaultScene="targetPractice">
+                        <SceneManager defaultScene="battleground">
                             <Scene id="hogwarts">
                                 <HogwartsScene />
                             </Scene>
@@ -52,8 +52,8 @@ export default function App() {
                             <Scene id="spellcasting">
                                 <SpellCastingGameScene />
                             </Scene>
-                            <Scene id="targetPractice">
-                                <TargetPracticeGameScene />
+                            <Scene id="battleground">
+                                <BattleGameScene />
                             </Scene>
                         </SceneManager>
                         <DialogOverlay />

@@ -38,7 +38,7 @@ const mapData = mapDataString(`
 `);
 
 type AttackType = 'projectile' | 'spellcast';
-export default function TargetPracticeGameScene() {
+export default function BattleGameScene() {
     const { openDialog, isDialogOpen } = useGame();
     const [isSpellcasting, setIsSpellcasting] = useState(false);
     const { shoot, resetScene, setScene } = useSceneManager();
@@ -47,6 +47,10 @@ export default function TargetPracticeGameScene() {
     const [voldemortHealth, setVoldemortHealth] = useState(6);
     const [naginiHealth, setNaginiHealth] = useState(6);
     const [nextAttackType, setNextAttackType] = useState<AttackType>('projectile');
+
+    useGameEvent<SceneReadyEvent>('scene-ready', () => {
+        openDialog(dialogs.intro);
+    });
 
     const onWin = useCallback(() => {
         // show dialog then go to hogwarts
@@ -113,11 +117,11 @@ export default function TargetPracticeGameScene() {
         setNaginiHealth(health => {
             const newHealth = health - 1;
             if (newHealth <= 0) {
-                // openDialog()
+                openDialog(dialogs['nagini-death']);
             }
             return health - 1;
         });
-    }, []);
+    }, [openDialog]);
 
     const onVoldemortShot = useCallback(() => {
         setNaginiHealth(naginiHP => {
@@ -144,15 +148,15 @@ export default function TargetPracticeGameScene() {
                 onHarryShot();
             }
         },
-        [harryHealth, onHarryShot]
+        [onHarryShot]
     );
 
     useGameLoop(time => {
-        if (lastAttackTime === -1) {
-            setLastAttackTime(time);
+        if (time - lastAttackTime < 15000 || isDialogOpen || isSpellcasting) {
             return;
         }
-        if (time - lastAttackTime < 15000 || isDialogOpen || isSpellcasting) {
+        if (lastAttackTime === -1) {
+            setLastAttackTime(time);
             return;
         }
         if (nextAttackType === 'spellcast') {
@@ -177,7 +181,7 @@ export default function TargetPracticeGameScene() {
                 <ScenePortal
                     name="start"
                     enterDirection={[0, 1]}
-                    target="hogwarts/targetPracticeEnter"
+                    target="hogwarts/battlegroundEnter"
                 />
             </GameObject>
 

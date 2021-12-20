@@ -1,6 +1,52 @@
 import { DialogInfo } from 'src/components/DialogScript';
 
 export const dialogs: { [key: string]: DialogInfo } = {
+    intro: {
+        dialog: [
+            {
+                text:
+                    "It can't be... How does Voldemort feel so powerful.  This is worse than I thought, Harry...",
+                character: 'dumbledore',
+            },
+            {
+                text: 'What should we do, Dumbledore?',
+                character: 'harry',
+            },
+            {
+                text:
+                    "The only thing we can do.  Fight.  This is what we've been preparing for. I believe in you, Harry.\nLet me explain to you how this will work.",
+                character: 'dumbledore',
+            },
+
+            {
+                text:
+                    'Voldemort is going alternate between trying to invade your mind, and casting various spells at you, including the killing curse.',
+                character: 'dumbledore',
+            },
+            {
+                text:
+                    "You already know how to stop him from accessing your mind, and how to battle against some spells, but we haven't seen the killing curse in a long time.  You survived once, but let's not test our luck.  If you see it coming, do not let it hit you.",
+                character: 'dumbledore',
+            },
+            {
+                text:
+                    "It looks like Nagini is protecting Voldemort, so you may not be able to hurt him until you take care of that little brat first.  You can shoot your own spells in whichever direction you're  facing by pressing the space bar.  I hope you got all that.",
+                character: 'dumbledore',
+            },
+            {
+                text: 'Are you ready?',
+                character: 'dumbledore',
+            },
+            {
+                text: 'No.',
+                character: 'harry',
+            },
+            {
+                text: 'Good.  Go!',
+                character: 'dumbledore',
+            },
+        ],
+    },
     'voldemort-spellcast': {
         dialog: [
             {
@@ -20,7 +66,7 @@ export const dialogs: { [key: string]: DialogInfo } = {
     'nagini-death': {
         dialog: [
             {
-                text: "You can't escape me!",
+                text: 'NAGINI! NO! You will pay for this, Harry.',
                 character: 'voldemort',
             },
         ],

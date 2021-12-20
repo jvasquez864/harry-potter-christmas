@@ -85,9 +85,9 @@ export default function HogwartsScene() {
                     <Collider />
                     <Interactable />
                     <ScenePortal
-                        name="targetPracticeEnter"
+                        name="battlegroundEnter"
                         enterDirection={[0, -1]}
-                        target="targetPractice/start"
+                        target="battleground/start"
                     />
                 </GameObject>
             )}
