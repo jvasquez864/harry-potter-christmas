@@ -16,6 +16,7 @@ import soundData from './soundData';
 import spriteData from './spriteData';
 import globalStyles from './styles/global';
 import BattleGameScene from './scenes/BattleGameScene';
+import DumbledoreChamberScene from './scenes/DumbledoreChamberScene';
 
 const styles = {
     root: (width: number, height: number) => css`
@@ -42,7 +43,7 @@ export default function App() {
             <div css={styles.root(width, height)}>
                 <Game cameraZoom={80}>
                     <AssetLoader urls={urls} placeholder="Loading assets ...">
-                        <SceneManager defaultScene="battleground">
+                        <SceneManager defaultScene="dumbelldoreChamber">
                             <Scene id="hogwarts">
                                 <HogwartsScene />
                             </Scene>
@@ -54,6 +55,9 @@ export default function App() {
                             </Scene>
                             <Scene id="battleground">
                                 <BattleGameScene />
+                            </Scene>
+                            <Scene id="dumbelldoreChamber">
+                                <DumbledoreChamberScene />
                             </Scene>
                         </SceneManager>
                         <DialogOverlay />

@@ -36,7 +36,8 @@ export default function MemoryMatchGameScene() {
     const onGameEnd = useCallback(
         (didWin: boolean) => {
             setIsMiniGameStarted(false);
-            setGameState('memoryWin', didWin);
+            setGameState('level', 1);
+            setGameState('didJustLose', !didWin);
             setScene('hogwarts');
         },
         [setGameState, setScene]

@@ -39,7 +39,7 @@ const mapData = mapDataString(`
 
 type AttackType = 'projectile' | 'spellcast';
 export default function BattleGameScene() {
-    const { openDialog, isDialogOpen } = useGame();
+    const { openDialog, isDialogOpen, setGameState } = useGame();
     const [isSpellcasting, setIsSpellcasting] = useState(false);
     const { shoot, resetScene, setScene } = useSceneManager();
     const [lastAttackTime, setLastAttackTime] = useState(-1);
@@ -54,13 +54,18 @@ export default function BattleGameScene() {
 
     const onWin = useCallback(() => {
         // show dialog then go to hogwarts
-        openDialog({ ...dialogs.win, onClose: () => setScene('hogwarts') });
-    }, [openDialog, setScene]);
+        setGameState('level', 3);
+        setGameState('didJustLose', false);
+        openDialog({ ...dialogs.win, onClose: () => setScene('dumbelldoreChamber') });
+    }, [openDialog, setScene, setGameState]);
 
     const onLose = useCallback(() => {
         // show dialog then reset scene
+
+        setGameState('level', 3);
+        setGameState('didJustLose', true);
         openDialog({ ...dialogs.lose, onClose: () => resetScene() });
-    }, [openDialog, resetScene]);
+    }, [openDialog, resetScene, setGameState]);
 
     const enemyProjectiles = useCallback((time: number) => {
         const projectiles: ShootOptions[] = [];

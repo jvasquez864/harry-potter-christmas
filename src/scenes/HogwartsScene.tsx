@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import * as THREE from 'three';
 import useGame from '../@core/useGame';
 import Collider from '../@core/Collider';
@@ -38,18 +38,38 @@ const mapData = mapDataString(`
 
 export default function HogwartsScene() {
     const { getGameState, openDialog } = useGame();
+    const level: number = getGameState('level') || 0;
+
+    const getSceneInitDialog = useCallback(() => {
+        // Get the dialog for the scene initialization based on the state of the game
+        const didJustLose: boolean = getGameState('didJustLose');
+        switch (level) {
+            case 1:
+                return didJustLose
+                    ? dialogs['memory-game-loss']
+                    : dialogs['memory-game-win'];
+            case 2:
+                return didJustLose
+                    ? dialogs['spellcasting-loss']
+                    : dialogs['spellcasting-win'];
+            case 3:
+                return didJustLose ? dialogs['battle-loss'] : dialogs['battle-win'];
+            // Whole game won
+            default:
+                return dialogs['new-game'];
+            // New game
+        }
+    }, [getGameState, level]);
+
     useGameEvent<SceneReadyEvent>('scene-ready', () => {
-        const didWinMemoryGame = getGameState('memoryWin');
-        const dialog = didWinMemoryGame
-            ? dialogs['memory-game-win']
-            : dialogs['memory-game-loss'];
-        didWinMemoryGame !== undefined && openDialog(dialog);
+        openDialog(getSceneInitDialog());
     });
-    const state = getGameState('hogwarts') || {};
-    const { x, y } = state.position || { x: 1, y: 14 };
-    const isGate1Open = state['gate-g0-open'];
-    const isGate2Open = state['gate-g1-open'];
-    const isGate3Open = state['gate-g2-open'];
+
+    const { x, y } = getGameState('position') || { x: 1, y: 14 };
+
+    const isGate1Open = level >= 1;
+    const isGate2Open = level >= 2;
+    const isGate3Open = level >= 3;
     return (
         <>
             <GameObject name="map">

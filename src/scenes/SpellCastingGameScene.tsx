@@ -59,7 +59,7 @@ export default function SpellCastingGameScene() {
         const hasCompletedPatronum = getSceneState(`spellcasting-complete-patronum`);
         const hasCompletedGeminio = getSceneState(`spellcasting-complete-geminio`);
         return hasCompletedStupefy && hasCompletedPatronum && hasCompletedGeminio;
-    }, []);
+    }, [getSceneState]);
 
     const onGameEnd = useCallback(
         (didWin: boolean, spellName: string) => {
@@ -71,7 +71,8 @@ export default function SpellCastingGameScene() {
 
             didWin && setSceneState(`spellcasting-complete-${spellName}`, didWin);
             if (isLevelComplete()) {
-                setGameState('spellcasting-complete', true);
+                setGameState('level', 2);
+                setGameState('didJustLose', false);
                 openDialog({
                     ...dialogs['level-complete'],
                     onClose: () => setScene('hogwarts/spellcastingEnter'),
