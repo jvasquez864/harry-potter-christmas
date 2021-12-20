@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import useGame from '../@core/useGame';
 import Collider from '../@core/Collider';
 import GameObject, { GameObjectProps } from '../@core/GameObject';
@@ -7,38 +7,32 @@ import Sprite from '../@core/Sprite';
 import useGameObjectEvent from '../@core/useGameObjectEvent';
 import spriteData from '../spriteData';
 import { DialogInfo } from '../components/DialogScript';
+import { dialogs } from '../dialogs/hogwarts';
 
 interface CastleGateScriptProps extends CastleGateProps {
     isOpen: boolean;
 }
 
-function CastleGateScript({ dialog, isOpen, gateKey }: CastleGateScriptProps) {
-    const { openDialog, setGameState } = useGame();
+function CastleGateScript({ isOpen, gateKey }: CastleGateScriptProps) {
+    const { openDialog, setGameState, getGameState } = useGame();
+    const gateID = useMemo(() => `gate-${gateKey}`, [gateKey]);
+    const keyNumber = parseInt(gateKey[1], 10);
+    const level = parseInt(getGameState('level') || 0, 10);
+    // eslint-disable-next-line no-eval
+    const didLose = eval(getGameState('didJustLose')) ?? true;
 
     useGameObjectEvent<InteractionEvent>('interaction', other => {
-        const gateID = `gate-${gateKey}`;
         if (!isOpen) {
-            if (other.inventory.includes(`${gateID}-key`) || true) {
-                openDialog({
-                    dialog: [
-                        {
-                            text: 'You slide the key in and the gate finally opens!',
-                            character: 'harry',
-                        },
-                        {
-                            text:
-                                '"Bloody hell, what\'s that sound?  Why do I always end up in these situations...  Let me get my robe before I go in."',
-                            character: 'harry',
-                        },
-                    ],
-                });
+            const shouldOpen =
+                other.inventory.includes(`${gateID}-key`) ||
+                (level >= keyNumber && !didLose);
+            if (shouldOpen) {
+                openDialog(dialogs[`${gateKey}-opened`]);
 
-                // TODO:isolate gaet-1 from other gates too.
-                // (need to do this anyway to get the right dialogs)
                 const key = `${gateID}-open`;
-                setGameState('hogwarts', { [key]: true });
+                setGameState(key, true);
             } else {
-                openDialog(dialog);
+                openDialog(dialogs[`${gateKey}-closed`]);
             }
         }
     });
@@ -46,14 +40,14 @@ function CastleGateScript({ dialog, isOpen, gateKey }: CastleGateScriptProps) {
 }
 
 interface CastleGateProps extends GameObjectProps {
-    dialog: DialogInfo;
     gateKey: string;
 }
-export default function CastleGate({ x, y, dialog, gateKey, ...props }: CastleGateProps) {
+export default function CastleGate({ x, y, gateKey, ...props }: CastleGateProps) {
     const { getGameState } = useGame();
     const [rows, columns] = [3, 3];
-    const hogwartsState = getGameState('hogwarts') || {};
-    const isOpen = hogwartsState[`gate-${gateKey}-open`];
+
+    const isOpen = getGameState(`gate-${gateKey}-open`);
+
     return (
         <Fragment>
             {[...Array(rows)].map((_, yOffset) =>
@@ -73,11 +67,7 @@ export default function CastleGate({ x, y, dialog, gateKey, ...props }: CastleGa
                             <Sprite {...spriteData.objects} state={spritePath} />
                             <Collider />
                             <Interactable />
-                            <CastleGateScript
-                                isOpen={isOpen}
-                                gateKey={gateKey}
-                                dialog={dialog}
-                            />
+                            <CastleGateScript isOpen={isOpen} gateKey={gateKey} />
                         </GameObject>
                     );
                 })

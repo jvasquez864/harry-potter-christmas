@@ -37,10 +37,12 @@ const mapData = mapDataString(`
 | | | | | | | | | | | | | | | | |
 `);
 
-type AttackType = 'projectile' | 'spellcast';
+type AttackType = 'projectile' | 'spellcast' | 'memory';
+const ATTACK_FREQUENCY = 12 * 1000;
 export default function BattleGameScene() {
     const { openDialog, isDialogOpen, setGameState } = useGame();
     const [isSpellcasting, setIsSpellcasting] = useState(false);
+    const [isMemoryAttack, setIsMemoryAttack] = useState(false);
     const { shoot, resetScene, setScene } = useSceneManager();
     const [lastAttackTime, setLastAttackTime] = useState(-1);
     const [harryHealth, setHarryHealth] = useState(3);
@@ -67,9 +69,10 @@ export default function BattleGameScene() {
         openDialog({ ...dialogs.lose, onClose: () => resetScene() });
     }, [openDialog, resetScene, setGameState]);
 
-    const enemyProjectiles = useCallback((time: number) => {
+    const enemyProjectiles = useCallback((time: number, offset?: boolean) => {
         const projectiles: ShootOptions[] = [];
-        for (let i = 1; i < mapData[0].length - 1; i += 2) {
+        const initialX = offset ? 0 : 1;
+        for (let i = initialX; i < mapData[0].length - 1; i += 2) {
             projectiles.push({
                 direction: [0, -1],
                 position: { x: i, y: 8 },
@@ -80,10 +83,21 @@ export default function BattleGameScene() {
         return projectiles;
     }, []);
 
+    const handleMemory = useCallback(() => {
+        openDialog({
+            ...dialogs['voldemort-memory'],
+            onClose: () => {
+                setNextAttackType('spellcast');
+                setIsMemoryAttack(true);
+            },
+        });
+    }, [openDialog]);
+
     const handleSpellcast = useCallback(() => {
         openDialog({
             ...dialogs['voldemort-spellcast'],
             onClose: () => {
+                setNextAttackType('projectile');
                 setIsSpellcasting(true);
             },
         });
@@ -95,12 +109,16 @@ export default function BattleGameScene() {
                 ...dialogs['voldemort-projectile'],
                 onClose: async () => {
                     const interval = 1500;
-                    setNextAttackType('spellcast');
                     shoot(enemyProjectiles(time));
                     await waitForMs(interval);
-                    shoot(enemyProjectiles(time + interval));
+                    shoot(enemyProjectiles(time + interval, true));
                     await waitForMs(interval);
                     shoot(enemyProjectiles(time + 2 * interval));
+                    await waitForMs(interval);
+                    shoot(enemyProjectiles(time + 3 * interval, true));
+
+                    setNextAttackType('memory');
+                    setLastAttackTime(-1);
                 },
             });
         },
@@ -149,6 +167,18 @@ export default function BattleGameScene() {
     const onSpellcastingEnd = useCallback(
         (didWin: boolean) => {
             setIsSpellcasting(false);
+            setLastAttackTime(-1);
+            if (!didWin) {
+                onHarryShot();
+            }
+        },
+        [onHarryShot]
+    );
+
+    const onMemoryAttackEnd = useCallback(
+        (didWin: boolean) => {
+            setIsMemoryAttack(false);
+            setLastAttackTime(-1);
             if (!didWin) {
                 onHarryShot();
             }
@@ -157,20 +187,29 @@ export default function BattleGameScene() {
     );
 
     useGameLoop(time => {
-        if (time - lastAttackTime < 15000 || isDialogOpen || isSpellcasting) {
+        if (
+            time - lastAttackTime < ATTACK_FREQUENCY ||
+            isDialogOpen ||
+            isSpellcasting ||
+            isMemoryAttack
+        ) {
             return;
         }
         if (lastAttackTime === -1) {
             setLastAttackTime(time);
             return;
         }
+
+        // In the onGameEnd of spellcasting && memoery match, we reset the lastAttackTime to -1, so that we can start counting AFTER the game is over.
+        // Otherwise the use is overwhelmed
         if (nextAttackType === 'spellcast') {
-            setNextAttackType('projectile');
             handleSpellcast();
-        } else {
+        } else if (nextAttackType === 'projectile') {
             handleProjectile(time);
+            setLastAttackTime(time);
+        } else {
+            handleMemory();
         }
-        setLastAttackTime(time);
     });
 
     return (
@@ -202,11 +241,21 @@ export default function BattleGameScene() {
                     spellName="stupefy"
                 />
             )}
-            <HealthOverlay
-                harryHealth={harryHealth}
-                voldemortHealth={voldemortHealth}
-                naginiHealth={naginiHealth}
-            />
+            {isMemoryAttack && (
+                <MemoryMatchOverlay
+                    startingLevel={4}
+                    maxLevel={5}
+                    isOpen
+                    onGameEnd={onMemoryAttackEnd}
+                />
+            )}
+            {!isMemoryAttack && (
+                <HealthOverlay
+                    harryHealth={harryHealth}
+                    voldemortHealth={voldemortHealth}
+                    naginiHealth={naginiHealth}
+                />
+            )}
         </>
     );
 }

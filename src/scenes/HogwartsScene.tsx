@@ -42,23 +42,12 @@ export default function HogwartsScene() {
 
     const getSceneInitDialog = useCallback(() => {
         // Get the dialog for the scene initialization based on the state of the game
-        const didJustLose: boolean = getGameState('didJustLose');
-        switch (level) {
-            case 1:
-                return didJustLose
-                    ? dialogs['memory-game-loss']
-                    : dialogs['memory-game-win'];
-            case 2:
-                return didJustLose
-                    ? dialogs['spellcasting-loss']
-                    : dialogs['spellcasting-win'];
-            case 3:
-                return didJustLose ? dialogs['battle-loss'] : dialogs['battle-win'];
-            // Whole game won
-            default:
-                return dialogs['new-game'];
-            // New game
+        // eslint-disable-next-line no-eval
+        const didJustLose: boolean = eval(getGameState('didJustLose'));
+        if (level !== 0) {
+            return didJustLose ? dialogs.loss : dialogs.win;
         }
+        return dialogs['new-game'];
     }, [getGameState, level]);
 
     useGameEvent<SceneReadyEvent>('scene-ready', () => {
@@ -67,9 +56,9 @@ export default function HogwartsScene() {
 
     const { x, y } = getGameState('position') || { x: 1, y: 14 };
 
-    const isGate1Open = level >= 1;
-    const isGate2Open = level >= 2;
-    const isGate3Open = level >= 3;
+    const isGate1Open = getGameState('gate-g0-open');
+    const isGate2Open = getGameState('gate-g1-open');
+    const isGate3Open = getGameState('gate-g2-open');
     return (
         <>
             <GameObject name="map">

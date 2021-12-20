@@ -1,7 +1,7 @@
 import { DialogInfo } from 'src/components/DialogScript';
 
 export const dialogs: { [key: string]: DialogInfo } = {
-    g0: {
+    'g0-closed': {
         dialog: [
             {
                 text:
@@ -14,33 +14,54 @@ export const dialogs: { [key: string]: DialogInfo } = {
             },
         ],
     },
-    g1: {
+    'g0-opened': {
         dialog: [
             {
-                text:
-                    'Harry shakes the gate, but is disappointed to find out the gate is locked tight.  He leans in closer and gets a strong smell of citrus.',
+                text: 'You slide the key in and the gate finally opens!',
                 character: 'harry',
             },
             {
-                text: '"I\'ve smelled this before... but I don\'t quite remember where."',
+                text:
+                    '"Bloody hell, what\'s that sound?  Why do I always end up in these situations...  Let me get my robe before I go in."',
                 character: 'harry',
             },
         ],
     },
-    g2: {
+    'g1-closed': {
         dialog: [
             {
                 text:
-                    'Harry shakes the gate, but is disappointed to find out the gate is locked tight.  He leans in closer and gets a strong smell of citrus.',
-                character: 'harry',
-            },
-            {
-                text: '"I\'ve smelled this before... but I don\'t quite remember where."',
+                    "What am I doing here?  Perhaps I should come back later, when I'm ready.",
                 character: 'harry',
             },
         ],
     },
-    'memory-game-loss': {
+    'g1-opened': {
+        dialog: [
+            {
+                text: 'I wonder what Dumbledore has in store for me now...',
+                character: 'harry',
+            },
+        ],
+    },
+    'g2-closed': {
+        dialog: [
+            {
+                text:
+                    "What am I doing here?  Perhaps I should come back later, when I'm ready.",
+                character: 'harry',
+            },
+        ],
+    },
+    'g2-opened': {
+        dialog: [
+            {
+                text: 'I have a strange feeling about this...',
+                character: 'harry',
+            },
+        ],
+    },
+    loss: {
         dialog: [
             {
                 text:
@@ -49,11 +70,19 @@ export const dialogs: { [key: string]: DialogInfo } = {
             },
         ],
     },
-    'memory-game-win': {
+    win: {
         dialog: [
             {
                 text:
                     'Well done, Harry!  I knew you could do it.  Voldemort managed to get away this time, but we should take advantage of this time to train and become stronger.',
+                character: 'dumbledore',
+            },
+        ],
+    },
+    'new-game': {
+        dialog: [
+            {
+                text: 'Test new game',
                 character: 'dumbledore',
             },
         ],

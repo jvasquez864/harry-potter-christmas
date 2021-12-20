@@ -21,11 +21,15 @@ import useAsset from './useAsset';
 interface MemoryMatchOverlayProps extends HTMLProps {
     isOpen: boolean;
     onGameEnd: (didWin: boolean) => void;
+    startingLevel?: number;
+    maxLevel?: number;
 }
 
 export default function MemoryMatchOverlay({
     children,
     isOpen,
+    startingLevel = 3,
+    maxLevel = 3,
     onGameEnd,
     ...props
 }: MemoryMatchOverlayProps) {
@@ -35,10 +39,9 @@ export default function MemoryMatchOverlay({
     const [width, height] = useWindowSize();
     const [targetCards, setTargetCards] = useState([]);
     const [selectedCards, setSelectedCards] = useState([]);
-    const [difficultyLevel, setDifficultyLevel] = useState(3);
+    const [difficultyLevel, setDifficultyLevel] = useState(startingLevel);
 
     const [isChoosingCards, setIsChoosingCards] = useState(false);
-    const maxLevel = useMemo(() => 3, []);
     const possibleCards = useMemo(
         () => [
             'ring',

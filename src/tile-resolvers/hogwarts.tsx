@@ -205,9 +205,7 @@ export default function resolveMapTile(type, x, y) {
                 </Fragment>
             );
         case 'g': // castle gate
-            // eslint-disable-next-line no-case-declarations
-            const dialog = dialogs[type];
-            return <CastleGate gateKey={type as string} dialog={dialog} {...position} />;
+            return <CastleGate gateKey={type as string} {...position} />;
         default:
             return null;
     }

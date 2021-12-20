@@ -8,6 +8,7 @@ import React, {
     useState,
 } from 'react';
 import { Canvas } from 'react-three-fiber';
+import storage, { get, set } from 'local-storage';
 import { DialogInfo } from '../components/DialogScript';
 import { GameObjectLayer, GameObjectRef } from './GameObject';
 import { SceneExitEvent } from './Scene';
@@ -81,6 +82,7 @@ export default function Game({
         () => ({
             setGameState(key, value) {
                 gameStore.set(key, value);
+                set(key, value);
             },
             getGameState(key) {
                 return gameStore.get(key);
@@ -88,6 +90,11 @@ export default function Game({
         }),
         [gameStore]
     );
+
+    useEffect(() => {
+        // Hydrate game state
+        Object.entries(localStorage).forEach(([key, val]) => gameStore.set(key, val));
+    }, [gameStore]);
 
     useEffect(() => {
         return pubSub.subscribe<SceneExitEvent>('scene-exit', () => {

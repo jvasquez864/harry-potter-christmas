@@ -63,6 +63,14 @@ export const dialogs: { [key: string]: DialogInfo } = {
             },
         ],
     },
+    'voldemort-memory': {
+        dialog: [
+            {
+                text: 'I know your every move, Harry!',
+                character: 'voldemort',
+            },
+        ],
+    },
     'nagini-death': {
         dialog: [
             {
