@@ -28,7 +28,7 @@ const mapData = mapDataString(`
     c1S c3  | 0 0 0 |   c1S c3 
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
-| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1
+| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
 | 0 B C B 0 0 0 0 0 0 0 0 0 0 0 |
 | 0 C C C 0 0 0 0 0 v3v40 0 0 0 |
 | 0 0 0 0 0 0 0 0 0 v1v2L 0 0 0 |
@@ -54,7 +54,7 @@ export default function HogwartsScene() {
         openDialog(getSceneInitDialog());
     });
 
-    const { x, y } = getGameState('position') || { x: 1, y: 14 };
+    const { x, y } = getGameState('position') || { x: 8, y: 2 };
 
     const isGate1Open = getGameState('gate-g0-open');
     const isGate2Open = getGameState('gate-g1-open');
