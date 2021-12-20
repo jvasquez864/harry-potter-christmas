@@ -15,10 +15,12 @@ import Attackable from '../@core/Attackable';
 interface PlayerProps extends GameObjectProps {
     canWalk?: boolean;
     onAttacked?: () => void;
+    onShot?: () => void;
 }
 const Player = React.forwardRef(function PlayerInner({
     canWalk,
     onAttacked,
+    onShot,
     ...props
 }: PlayerProps) {
     return (
@@ -37,7 +39,7 @@ const Player = React.forwardRef(function PlayerInner({
                 <Sprite {...spriteData.player} />
             </CharacterScript>
             <CameraFollowScript />
-            <PlayerScript canWalk={canWalk} onAttacked={onAttacked} />
+            <PlayerScript canWalk={canWalk} onAttacked={onAttacked} onShot={onShot} />
             <DialogScript />
         </GameObject>
     );
@@ -46,6 +48,9 @@ const Player = React.forwardRef(function PlayerInner({
 Player.defaultProps = {
     canWalk: true,
     onAttacked: () => {
+        /* No-op */
+    },
+    onShot: () => {
         /* No-op */
     },
 };

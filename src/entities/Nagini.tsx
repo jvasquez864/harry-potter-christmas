@@ -13,7 +13,7 @@ import HostileNPCScript from '../components/HostileNPCScript';
 import HostileNPC from './HostileNPC';
 
 interface NaginiProps extends GameObjectProps {
-    onAttacked: () => void;
+    onAttacked?: () => void;
     onShot: () => void;
 }
 export default function Nagini(props: NaginiProps) {

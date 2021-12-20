@@ -13,7 +13,7 @@ import HostileNPCScript from '../components/HostileNPCScript';
 import HostileNPC from './HostileNPC';
 
 interface VoldemortProps extends GameObjectProps {
-    onAttacked: () => void;
+    onAttacked?: () => void;
     onShot: () => void;
     patrol?: boolean;
 }

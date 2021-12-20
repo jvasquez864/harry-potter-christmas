@@ -18,7 +18,7 @@ import Attackable from '../@core/Attackable';
 
 interface HostileNPCProps extends GameObjectProps {
     name: string;
-    onAttacked: () => void;
+    onAttacked?: () => void;
     onShot: () => void;
     patrol?: boolean;
 }
@@ -45,3 +45,9 @@ export default function HostileNPC({
         </GameObject>
     );
 }
+
+HostileNPC.defaultProps = {
+    onAttacked: () => {
+        // no-op
+    },
+};

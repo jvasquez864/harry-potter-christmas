@@ -89,14 +89,13 @@ export default function SceneManager({ defaultScene, children }: Props) {
                 return sceneStore.current.get(`${currentScene}.${key}`);
             },
             shoot(options: ShootOptions[]) {
-                const newProjectiles = [...projectiles, ...options];
-                setProjectiles(newProjectiles);
+                setProjectiles(current => [...current, ...options]);
             },
             removeProjectile(id: string) {
                 setProjectiles(items => items.filter(obj => obj.id !== id));
             },
         }),
-        [currentScene, currentLevel, publish, projectiles]
+        [currentScene, currentLevel, publish]
     );
 
     return (

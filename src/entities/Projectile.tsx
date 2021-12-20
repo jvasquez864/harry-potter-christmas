@@ -23,7 +23,7 @@ interface ProjectileScriptProps extends GameObjectProps {
 }
 type ProjectileProps = GameObjectProps & ProjectileScriptProps;
 
-function ProjectileScript({ direction, id }: ProjectileScriptProps) {
+function ProjectileScript({ direction, id, isHostile }: ProjectileScriptProps) {
     const { getComponent, getRef, transform } = useGameObject();
     const { findGameObjectsByXY } = useGame();
     const workState = useRef(false);
@@ -40,7 +40,7 @@ function ProjectileScript({ direction, id }: ProjectileScriptProps) {
             obj.getComponent<AttackableRef>('Attackable')
         );
         attackables.forEach(attackable => {
-            attackable?.onShot();
+            attackable?.onShot(isHostile);
         });
 
         // Setting to disabled is actually more performant than removing the projectile
@@ -50,20 +50,8 @@ function ProjectileScript({ direction, id }: ProjectileScriptProps) {
 
     useGameObjectEvent<CollisionEvent>('collision', async () => {
         //  Triggered by projectile being hit by something (i.e shooting two projectiles at eachother, or walking into one)
-        // await publish<WasShotEvent>('was-shot');
         getRef().setDisabled(true);
     });
-
-    // useGameLoop(time => {
-    //     if (time - lastMoveTime < 800) {
-    //         return;
-    //     }
-
-    //     setLastMoveTime(time);
-    //     const { x, y } = getRef().transform;
-    //     const nextPosition = { x: x + direction[0] * 5, y: y + direction[1] * 5 };
-    //     getComponent<MoveableRef>('Moveable')?.move(nextPosition);
-    // });
 
     // Trigger movement
     useEffect(() => {
@@ -125,7 +113,7 @@ export default function Projectile({
             <Moveable initialMoveDirection={direction} isProjectile />
             <Collider />
             <Interactable />
-            <ProjectileScript id={id} direction={direction} />
+            <ProjectileScript id={id} isHostile={isHostile} direction={direction} />
         </GameObject>
     );
 }

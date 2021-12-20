@@ -12,15 +12,16 @@ import usePointer from '../@core/usePointer';
 import usePointerClick from '../@core/usePointerClick';
 import tileUtils from '../@core/utils/tileUtils';
 import PlayerPathOverlay from './PlayerPathOverlay';
-import { AttackableRef, AttackEvent } from '../@core/Attackable';
+import { AttackableRef, AttackEvent, WasShotEvent } from '../@core/Attackable';
 import useGameObjectEvent from '../@core/useGameObjectEvent';
 import useKeyActions from 'src/@core/useKeyActions';
 
 interface PlayerProps {
     canWalk: boolean;
     onAttacked: () => void;
+    onShot: () => void;
 }
-export default function PlayerScript({ canWalk, onAttacked }: PlayerProps) {
+export default function PlayerScript({ canWalk, onAttacked, onShot }: PlayerProps) {
     const { getComponent, transform, publish } = useGameObject();
     const { isDialogOpen } = useGame();
     const testCollision = useCollisionTest();
@@ -31,6 +32,11 @@ export default function PlayerScript({ canWalk, onAttacked }: PlayerProps) {
 
     useGameObjectEvent<AttackEvent>('attacked', () => {
         onAttacked();
+    });
+
+    useGameObjectEvent<WasShotEvent>('was-shot', isHostile => {
+        // Should only be affected by hostil npc projectiles
+        isHostile && onShot();
     });
 
     const handleProjectileFile = useCallback(

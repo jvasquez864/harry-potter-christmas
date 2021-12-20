@@ -38,8 +38,9 @@ export default function HostileNPCScript({
         onAttacked();
     });
 
-    useGameObjectEvent<WasShotEvent>('was-shot', () => {
-        onShot();
+    useGameObjectEvent<WasShotEvent>('was-shot', isHostile => {
+        // Hostile NPC's shouldnt be affected by hostile projectiles
+        !isHostile && onShot();
     });
 
     useGameLoop(time => {

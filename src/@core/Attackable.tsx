@@ -15,7 +15,7 @@ export interface ShootOptions {
 }
 export type ShootEvent = PubSubEvent<'shoot', ShootOptions>;
 export type AttackEvent = PubSubEvent<'attacked', GameObjectRef>;
-export type WasShotEvent = PubSubEvent<'was-shot', GameObjectRef>;
+export type WasShotEvent = PubSubEvent<'was-shot', boolean>;
 
 export type AttackableRef = ComponentRef<
     'Attackable',
@@ -23,7 +23,7 @@ export type AttackableRef = ComponentRef<
         attack: (position: Position) => Promise<boolean>;
         onAttack: (ref: GameObjectRef) => Promise<void>;
         shoot: (options?: ShootOptions[], time?: number) => Promise<void>;
-        onShot: () => Promise<void>;
+        onShot: (isHostile: boolean) => Promise<void>;
     }
 >;
 
@@ -70,8 +70,8 @@ export default function InteracAttackabletable() {
             };
             sceneShoot([defaultOoptions]);
         },
-        async onShot() {
-            await publish<WasShotEvent>('was-shot', getRef());
+        async onShot(isHostile: boolean) {
+            await publish<WasShotEvent>('was-shot', isHostile);
         },
     });
 
