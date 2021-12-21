@@ -156,8 +156,6 @@ export default function BattleGameScene() {
     const onVoldemortShot = useCallback(() => {
         setNaginiHealth(naginiHP => {
             if (naginiHP > 0) {
-                // openDialog()
-                // win condition
                 return naginiHP;
             }
             setVoldemortHealth(health => {

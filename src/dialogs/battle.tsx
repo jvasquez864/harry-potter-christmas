@@ -20,7 +20,7 @@ export const dialogs: { [key: string]: DialogInfo } = {
 
             {
                 text:
-                    'Voldemort is going alternate between trying to invade your mind, and casting various spells at you, including the killing curse.',
+                    'Voldemort is going to alternate between trying to invade your mind, and casting various spells at you, including the killing curse.',
                 character: 'dumbledore',
             },
             {
