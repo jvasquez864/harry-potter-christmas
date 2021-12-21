@@ -1,7 +1,9 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import soundData from '../soundData';
 import Projectile from '../entities/Projectile';
 import { ShootOptions } from './Attackable';
 import { SceneExitEvent, ScenePreExitEvent } from './Scene';
+import { useSound } from './Sound';
 import useGame from './useGame';
 import { SceneStoreProvider } from './useGameObjectStore';
 import waitForMs from './utils/waitForMs';
@@ -35,6 +37,7 @@ export default function SceneManager({ defaultScene, children }: Props) {
     const currentLevel = useRef(Number(initialLevel));
     const sceneStore = useRef(new Map<string, any>());
     const [projectiles, setProjectiles] = useState<ShootOptions[]>([]);
+
     const api = useMemo<SceneManagerContextValue>(
         () => ({
             currentScene,

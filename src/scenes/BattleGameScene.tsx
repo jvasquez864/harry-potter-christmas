@@ -23,6 +23,8 @@ import HealthOverlay from '../@core/HealthOverlay';
 import { ShootOptions } from '../@core/Attackable';
 import useGameLoop from '../@core/useGameLoop';
 import waitForMs from '../@core/utils/waitForMs';
+import soundData from '../soundData';
+import { useSound } from '../@core/Sound';
 
 const mapData = mapDataString(`
 # # # # # # # # # # # # # # # # #
@@ -49,6 +51,7 @@ export default function BattleGameScene() {
     const [voldemortHealth, setVoldemortHealth] = useState(6);
     const [naginiHealth, setNaginiHealth] = useState(6);
     const [nextAttackType, setNextAttackType] = useState<AttackType>('projectile');
+    const playKillingCurse = useSound(soundData['avada-kedavra']);
 
     useGameEvent<SceneReadyEvent>('scene-ready', () => {
         openDialog(dialogs.intro);
@@ -95,6 +98,7 @@ export default function BattleGameScene() {
     }, [openDialog]);
 
     const handleSpellcast = useCallback(() => {
+        playKillingCurse();
         openDialog({
             ...dialogs['voldemort-spellcast'],
             onClose: () => {
@@ -102,14 +106,16 @@ export default function BattleGameScene() {
                 setIsSpellcasting(true);
             },
         });
-    }, [openDialog]);
+    }, [openDialog, playKillingCurse]);
 
     const handleProjectile = useCallback(
         (time: number) => {
+            playKillingCurse();
             openDialog({
                 ...dialogs['voldemort-projectile'],
                 onClose: async () => {
                     const interval = 1500;
+
                     shoot(enemyProjectiles(time));
                     await waitForMs(interval);
                     shoot(enemyProjectiles(time + interval, true));
@@ -123,7 +129,7 @@ export default function BattleGameScene() {
                 },
             });
         },
-        [enemyProjectiles, shoot, openDialog]
+        [enemyProjectiles, shoot, openDialog, playKillingCurse]
     );
 
     const onHarryShot = useCallback(() => {

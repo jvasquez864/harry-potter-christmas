@@ -13,6 +13,8 @@ import { DialogInfo } from '../components/DialogScript';
 import { GameObjectLayer, GameObjectRef } from './GameObject';
 import { SceneExitEvent } from './Scene';
 import createPubSub, { PubSub } from './utils/createPubSub';
+import soundData from '../soundData';
+import { useSound } from './Sound';
 
 export type GameObjectRegistry<T = GameObjectRef> = Map<symbol | string, T>;
 

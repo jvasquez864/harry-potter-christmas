@@ -1,5 +1,6 @@
+/* eslint-disable jsx-a11y/media-has-caption */
 import { css, Global } from '@emotion/core';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useThree } from 'react-three-fiber';
 import AssetLoader from './@core/AssetLoader';
 import DialogOverlay from './@core/DialogOverlay';
@@ -36,6 +37,16 @@ const urls = [
 
 export default function App() {
     const [width, height] = useWindowSize();
+    const [hasInteracted, setHasInteracted] = useState(false);
+
+    useEffect(() => {
+        window.addEventListener('click', () => {
+            setHasInteracted(true);
+            window.removeEventListener('click', () => {
+                /** */
+            });
+        });
+    });
 
     return (
         <>
@@ -63,6 +74,11 @@ export default function App() {
                         <DialogOverlay />
                     </AssetLoader>
                 </Game>
+                {hasInteracted && (
+                    <audio autoPlay loop>
+                        <source src="./assets/sfx/background.mp3" type="audio/mp3" />
+                    </audio>
+                )}
             </div>
         </>
     );

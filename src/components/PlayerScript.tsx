@@ -15,6 +15,8 @@ import PlayerPathOverlay from './PlayerPathOverlay';
 import { AttackableRef, AttackEvent, WasShotEvent } from '../@core/Attackable';
 import useGameObjectEvent from '../@core/useGameObjectEvent';
 import useKeyActions from 'src/@core/useKeyActions';
+import soundData from '../soundData';
+import { useSound } from '../@core/Sound';
 
 interface PlayerProps {
     canWalk: boolean;
@@ -29,6 +31,7 @@ export default function PlayerScript({ canWalk, onAttacked, onShot }: PlayerProp
     const [path, setPath] = useState<Position[]>([]);
     const [pathOverlayEnabled, setPathOverlayEnabled] = useState(true);
     const [lastFireTime, setLastFireTime] = useState(0);
+    // const playStupefy = useSound(soundData.stupefy);
 
     useGameObjectEvent<AttackEvent>('attacked', () => {
         onAttacked();
@@ -47,6 +50,7 @@ export default function PlayerScript({ canWalk, onAttacked, onShot }: PlayerProp
             }
             setLastFireTime(time);
             getComponent<AttackableRef>('Attackable')?.shoot(null, time);
+            // playStupefy();
         },
         [getComponent, lastFireTime]
     );
