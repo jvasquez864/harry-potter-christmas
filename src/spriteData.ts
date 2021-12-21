@@ -47,6 +47,23 @@ const spriteData: { [index: string]: SpriteProps } = {
             ],
         },
     },
+    'dumbledore-player': {
+        src: './assets/dumbledore-player.png',
+        frameWidth: 20,
+        frameHeight: 20,
+        frameTime: 300,
+        sheet: {
+            default: [[0, 2]],
+            walk: [
+                [1, 2],
+                [2, 2],
+            ],
+            action: [
+                [0, 1],
+                [2, 1],
+            ],
+        },
+    },
     nagini: {
         src: './assets/nagini.png',
         frameWidth: 20,

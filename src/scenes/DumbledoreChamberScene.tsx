@@ -23,6 +23,7 @@ import HealthOverlay from '../@core/HealthOverlay';
 import { ShootOptions } from '../@core/Attackable';
 import useGameLoop from '../@core/useGameLoop';
 import waitForMs from '../@core/utils/waitForMs';
+import NPC from '../entities/NPC';
 
 const mapData = mapDataString(`
 
@@ -63,6 +64,7 @@ export default function DumbledoreChamberScene() {
             </GameObject>
 
             <Player x={8} y={1} />
+            <NPC name="dumbledore-player" x={3} y={4} />
         </>
     );
 }
