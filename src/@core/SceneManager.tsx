@@ -37,6 +37,7 @@ export default function SceneManager({ defaultScene, children }: Props) {
     const currentLevel = useRef(Number(initialLevel));
     const sceneStore = useRef(new Map<string, any>());
     const [projectiles, setProjectiles] = useState<ShootOptions[]>([]);
+    const playStupefy = useSound(soundData.stupefy);
 
     const api = useMemo<SceneManagerContextValue>(
         () => ({
@@ -92,6 +93,8 @@ export default function SceneManager({ defaultScene, children }: Props) {
                 return sceneStore.current.get(`${currentScene}.${key}`);
             },
             shoot(options: ShootOptions[]) {
+                const allySpells = options.filter(opt => !opt.isHostile);
+                allySpells.length && playStupefy();
                 setProjectiles(current => [...current, ...options]);
             },
             removeProjectile(id: string) {

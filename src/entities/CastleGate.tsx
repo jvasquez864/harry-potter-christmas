@@ -39,7 +39,10 @@ function CastleGateScript({ isOpen, gateKey }: CastleGateScriptProps) {
         }
     });
 
-    useGameObjectEvent<TriggerEvent>('trigger', () => {
+    useGameObjectEvent<TriggerEvent>('trigger', obj => {
+        if (obj.name !== 'player') {
+            return;
+        }
         switch (gateKey) {
             case 'g0':
                 setScene('memoryMatch');
