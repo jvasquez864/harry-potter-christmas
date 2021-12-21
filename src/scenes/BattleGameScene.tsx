@@ -58,7 +58,7 @@ export default function BattleGameScene() {
         // show dialog then go to hogwarts
         setGameState('level', 3);
         setGameState('didJustLose', false);
-        setGameState('position', { x: 14, y: 14 });
+        setGameState('position', JSON.stringify({ x: 14, y: 14 }));
         openDialog({ ...dialogs.win, onClose: () => setScene('dumbelldoreChamber') });
     }, [openDialog, setScene, setGameState]);
 

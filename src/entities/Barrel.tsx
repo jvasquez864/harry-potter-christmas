@@ -9,6 +9,7 @@ import useGameObject from '../@core/useGameObject';
 import useGameObjectEvent from '../@core/useGameObjectEvent';
 import waitForMs from '../@core/utils/waitForMs';
 import spriteData from '../spriteData';
+import { dialogs } from '../dialogs/hogwarts';
 
 interface BarrelScriptProps {
     isForSpell: boolean;
@@ -18,11 +19,13 @@ type BarrelProps = GameObjectProps & BarrelScriptProps;
 function BarrelScript({ isForSpell }: BarrelScriptProps) {
     const { getComponent } = useGameObject();
     const workState = useRef(false);
-    const { publish } = useGame();
+    const { publish, openDialog } = useGame();
 
     useGameObjectEvent<InteractionEvent>('interaction', () => {
         if (isForSpell) {
             publish<SpellCastingBeginEvent>('spell-casting-begin', 'geminio');
+        } else {
+            openDialog(dialogs.barrel);
         }
     });
 

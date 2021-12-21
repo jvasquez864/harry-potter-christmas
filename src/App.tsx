@@ -43,7 +43,7 @@ export default function App() {
             <div css={styles.root(width, height)}>
                 <Game cameraZoom={80}>
                     <AssetLoader urls={urls} placeholder="Loading assets ...">
-                        <SceneManager defaultScene="dumbelldoreChamber">
+                        <SceneManager defaultScene="hogwarts">
                             <Scene id="hogwarts">
                                 <HogwartsScene />
                             </Scene>

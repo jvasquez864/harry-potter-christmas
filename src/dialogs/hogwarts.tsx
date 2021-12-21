@@ -82,8 +82,48 @@ export const dialogs: { [key: string]: DialogInfo } = {
     'new-game': {
         dialog: [
             {
-                text: 'Test new game',
-                character: 'dumbledore',
+                text:
+                    "Being at Hogwarts during the holiday season isn't new to me, but why do I have this strange feeling?  I should look around and see what's going on. \n\n\n (Click outside the dialog window to continue)",
+                character: 'harry',
+            },
+            {
+                text:
+                    'It looks like I can move around using the W A S D keys, and can interact with objects by left clicking on them.',
+                character: 'harry',
+            },
+        ],
+    },
+    sword: {
+        dialog: [
+            {
+                text: "Looks like it's just a regular sword.",
+                character: 'harry',
+            },
+        ],
+    },
+    barrel: {
+        dialog: [
+            {
+                text:
+                    'The barrel is oozing a horrendous smell.  Someone must have cast a spell on it as a prank.',
+                character: 'harry',
+            },
+        ],
+    },
+    crate: {
+        dialog: [
+            {
+                text: "It's just a crate... but I really want to try and break it.",
+                character: 'harry',
+            },
+        ],
+    },
+    mantle: {
+        dialog: [
+            {
+                text:
+                    'There are rough marks on this... almost as if people were running by and kept getting something stuck onto the fabric.  I wonder what the commotion was about.',
+                character: 'harry',
             },
         ],
     },

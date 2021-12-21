@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { dialogs } from '../dialogs/hogwarts';
 import Collider from '../@core/Collider';
 import GameObject, { GameObjectProps } from '../@core/GameObject';
 import Interactable, { InteractionEvent } from '../@core/Interactable';
@@ -7,22 +8,16 @@ import useGameObject from '../@core/useGameObject';
 import useGameObjectEvent from '../@core/useGameObjectEvent';
 import waitForMs from '../@core/utils/waitForMs';
 import spriteData from '../spriteData';
+import useGame from '../@core/useGame';
 
 function MantleScript() {
     const { getComponent } = useGameObject();
+    const { openDialog } = useGame();
     const workState = useRef(false);
 
-    // useGameObjectEvent<InteractionEvent>('interaction', () => {
-    //     workState.current = !workState.current;
-
-    //     if (workState.current) {
-    //         getComponent<SpriteRef>('Sprite').setState('crate');
-    //     } else {
-    //         getComponent<SpriteRef>('Sprite').setState('workstation-1');
-    //     }
-
-    //     return waitForMs(400);
-    // });
+    useGameObjectEvent<InteractionEvent>('interaction', () => {
+        openDialog(dialogs.mantle);
+    });
 
     return null;
 }

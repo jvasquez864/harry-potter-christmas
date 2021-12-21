@@ -38,7 +38,7 @@ export default function MemoryMatchGameScene() {
             setIsMiniGameStarted(false);
             setGameState('level', 1);
             setGameState('didJustLose', !didWin);
-            setGameState('position', { x: 2, y: 14 });
+            setGameState('position', JSON.stringify({ x: 2, y: 14 }));
             setScene('hogwarts');
         },
         [setGameState, setScene]

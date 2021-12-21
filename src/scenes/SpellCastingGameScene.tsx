@@ -73,7 +73,7 @@ export default function SpellCastingGameScene() {
             if (isLevelComplete()) {
                 setGameState('level', 2);
                 setGameState('didJustLose', false);
-                setGameState('position', { x: 8, y: 14 });
+                setGameState('position', JSON.stringify({ x: 8, y: 14 }));
                 openDialog({
                     ...dialogs['level-complete'],
                     onClose: () => setScene('hogwarts/spellcastingEnter'),

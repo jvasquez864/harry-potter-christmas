@@ -1,4 +1,6 @@
 import React, { useRef } from 'react';
+import useGame from '../@core/useGame';
+import { dialogs } from '../dialogs/hogwarts';
 import Collider from '../@core/Collider';
 import GameObject, { GameObjectProps } from '../@core/GameObject';
 import Interactable, { InteractionEvent } from '../@core/Interactable';
@@ -10,19 +12,11 @@ import spriteData from '../spriteData';
 
 function CrateScript() {
     const { getComponent } = useGameObject();
+    const { openDialog } = useGame();
     const workState = useRef(false);
-
-    // useGameObjectEvent<InteractionEvent>('interaction', () => {
-    //     workState.current = !workState.current;
-
-    //     if (workState.current) {
-    //         getComponent<SpriteRef>('Sprite').setState('crate');
-    //     } else {
-    //         getComponent<SpriteRef>('Sprite').setState('workstation-1');
-    //     }
-
-    //     return waitForMs(400);
-    // });
+    useGameObjectEvent<InteractionEvent>('interaction', () => {
+        openDialog(dialogs.crate);
+    });
 
     return null;
 }

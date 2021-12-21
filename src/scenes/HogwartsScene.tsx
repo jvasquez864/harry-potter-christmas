@@ -32,8 +32,8 @@ const mapData = mapDataString(`
 | 0 B C B 0 0 0 0 0 0 0 0 0 0 0 |
 | 0 C C C 0 0 0 0 0 v3v40 0 0 0 |
 | 0 0 0 0 0 0 0 0 0 v1v2L 0 0 0 |
-0 0 5 5 5 5 5 5 5 5 5 5 5 5 5 5 |
-0 0 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+| 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 |
+2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
 `);
 
 export default function HogwartsScene() {
@@ -54,11 +54,9 @@ export default function HogwartsScene() {
         openDialog(getSceneInitDialog());
     });
 
-    const { x, y } = JSON.parse(getGameState('position') || '{ "x": 8, "y": 2 }');
-
-    const isGate1Open = getGameState('gate-g0-open');
-    const isGate2Open = getGameState('gate-g1-open');
-    const isGate3Open = getGameState('gate-g2-open');
+    const { x, y } = JSON.parse(
+        getGameState('position') || JSON.stringify({ x: 8, y: 2 })
+    );
     return (
         <>
             <GameObject name="map">
@@ -66,40 +64,6 @@ export default function HogwartsScene() {
                 <TileMap data={mapData} resolver={resolveMapTile} definesMapSize />
             </GameObject>
 
-            {isGate1Open && (
-                <GameObject x={2} y={15}>
-                    <Collider />
-                    <Interactable />
-                    <ScenePortal
-                        name="memoryMatchEnter"
-                        enterDirection={[0, -1]}
-                        target="memoryMatch/start"
-                    />
-                </GameObject>
-            )}
-            {isGate2Open && (
-                <GameObject x={8} y={15}>
-                    <Collider />
-                    <Interactable />
-                    <ScenePortal
-                        name="spellcastingEnter"
-                        enterDirection={[0, -1]}
-                        target="spellcasting/start"
-                    />
-                </GameObject>
-            )}
-
-            {isGate3Open && (
-                <GameObject x={14} y={15}>
-                    <Collider />
-                    <Interactable />
-                    <ScenePortal
-                        name="battlegroundEnter"
-                        enterDirection={[0, -1]}
-                        target="battleground/start"
-                    />
-                </GameObject>
-            )}
             <Player x={x} y={y} />
         </>
     );

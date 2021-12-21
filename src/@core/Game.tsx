@@ -93,7 +93,10 @@ export default function Game({
 
     useEffect(() => {
         // Hydrate game state
-        Object.entries(localStorage).forEach(([key, val]) => gameStore.set(key, val));
+        Object.entries(localStorage).forEach(([key, val]) => {
+            const parsedVal = key === 'position' ? JSON.parse(val) : val;
+            gameStore.set(key, parsedVal);
+        });
     }, [gameStore]);
 
     useEffect(() => {

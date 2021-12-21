@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import useGame from '../@core/useGame';
-import Collider from '../@core/Collider';
+import Collider, { TriggerEvent } from '../@core/Collider';
 import GameObject, { GameObjectProps } from '../@core/GameObject';
 import Interactable, { InteractionEvent } from '../@core/Interactable';
 import Sprite from '../@core/Sprite';
@@ -8,6 +8,7 @@ import useGameObjectEvent from '../@core/useGameObjectEvent';
 import spriteData from '../spriteData';
 import { DialogInfo } from '../components/DialogScript';
 import { dialogs } from '../dialogs/hogwarts';
+import useSceneManager from '../@core/useSceneManager';
 
 interface CastleGateScriptProps extends CastleGateProps {
     isOpen: boolean;
@@ -15,6 +16,7 @@ interface CastleGateScriptProps extends CastleGateProps {
 
 function CastleGateScript({ isOpen, gateKey }: CastleGateScriptProps) {
     const { openDialog, setGameState, getGameState } = useGame();
+    const { setScene } = useSceneManager();
     const gateID = useMemo(() => `gate-${gateKey}`, [gateKey]);
     const keyNumber = parseInt(gateKey[1], 10);
     const level = parseInt(getGameState('level') || 0, 10);
@@ -34,6 +36,22 @@ function CastleGateScript({ isOpen, gateKey }: CastleGateScriptProps) {
             } else {
                 openDialog(dialogs[`${gateKey}-closed`]);
             }
+        }
+    });
+
+    useGameObjectEvent<TriggerEvent>('trigger', () => {
+        switch (gateKey) {
+            case 'g0':
+                setScene('memoryMatch');
+                return;
+            case 'g1':
+                setScene('spellcasting');
+                return;
+            case 'g2':
+                setScene('battleground');
+                break;
+            default:
+                break;
         }
     });
     return null;
@@ -56,16 +74,18 @@ export default function CastleGate({ x, y, gateKey, ...props }: CastleGateProps)
                     const spritePath = isOpen
                         ? `castle-gate-open-${tileVariantNumber}`
                         : `castle-gate-${tileVariantNumber}`;
+                    const layer = tileVariantNumber === 1 && isOpen ? 'ground' : 'wall';
+                    const isTrigger = layer === 'ground';
                     return (
                         <GameObject
                             key={spritePath}
                             x={x + xOffset}
                             y={y + yOffset}
                             {...props}
-                            layer="wall"
+                            layer="ground"
                         >
                             <Sprite {...spriteData.objects} state={spritePath} />
-                            <Collider />
+                            <Collider isTrigger={isTrigger} />
                             <Interactable />
                             <CastleGateScript isOpen={isOpen} gateKey={gateKey} />
                         </GameObject>

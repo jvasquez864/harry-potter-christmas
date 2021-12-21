@@ -8,19 +8,14 @@ import useGameObject from '../@core/useGameObject';
 import useGameObjectEvent from '../@core/useGameObjectEvent';
 // import waitForMs from '../@core/utils/waitForMs';
 import spriteData from '../spriteData';
+import { dialogs } from '../dialogs/hogwarts';
 
 function SwordScript() {
     const { openDialog } = useGame();
 
-    // useGameObjectEvent<InteractionEvent>('interaction', () => {
-    //     openDialog({
-    //         character: 'harry',
-    //         dialog: [
-    //             'You hear a strange sound from this weapon.',
-    //             'Perhaps there is something within the walls',
-    //         ],
-    //     });
-    // });
+    useGameObjectEvent<InteractionEvent>('interaction', () => {
+        openDialog(dialogs.sword);
+    });
 
     return null;
 }
