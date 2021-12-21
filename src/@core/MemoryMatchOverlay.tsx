@@ -9,6 +9,7 @@ import dialog, {
     dialogText,
     flash,
     flashingArrow,
+    getCardAnimationTime,
     memoryCardImg,
     memoryCardImgOption,
     memoryCardOptionContainer,
@@ -29,7 +30,7 @@ export default function MemoryMatchOverlay({
     children,
     isOpen,
     startingLevel = 3,
-    maxLevel = 3,
+    maxLevel = 6,
     onGameEnd,
     ...props
 }: MemoryMatchOverlayProps) {
@@ -68,9 +69,9 @@ export default function MemoryMatchOverlay({
             setTargetCards(tmpTarget);
             setTimeout(() => {
                 setIsChoosingCards(true);
-            }, 10000);
+            }, 1500 + getCardAnimationTime(tmpTarget.length) * 1000);
         }
-    }, [isOpen, isChoosingCards, difficultyLevel, possibleCards]);
+    }, [isOpen, isChoosingCards, difficultyLevel, possibleCards, maxLevel, onGameEnd]);
 
     const onCardSelected = useCallback(
         (card: string) => {
@@ -105,7 +106,7 @@ export default function MemoryMatchOverlay({
         >
             <div css={memoryMatchOverlay(width * 0.9, height * 0.9)}>
                 {!isChoosingCards && (
-                    <div css={memorySlidingCards()}>
+                    <div css={memorySlidingCards(targetCards.length)}>
                         {targetCards.map((val, i) => (
                             <img
                                 key={i}

@@ -69,7 +69,7 @@ export const memoryMatchOverlay = (width: number, height: number) => {
 
 const slideKeyframes = keyframes`
  0% {
-     transform: translateX(50%)
+     transform: translateX(100%)
  }
 
  100% {
@@ -78,14 +78,33 @@ const slideKeyframes = keyframes`
  }
 `;
 
-export const memorySlidingCards = () => {
+export const getCardAnimationTime = (cardCount: number) => {
+    switch (cardCount) {
+        case 3:
+            return 4;
+        case 4:
+            return 5;
+        case 5:
+            return 6.5;
+        case 6:
+            return 7.5;
+        default:
+            return 1;
+    }
+};
+
+export const memorySlidingCards = (cardCount: number) => {
+    // Memory card is 500px (300 width + 200 horizontal margin).
+    // So we can do (screenWidth/500) * cardCount to calculate the animation time,
+    // for a constant speed across any number of cards or screen sizes.
+
     return css`
         display: flex;
         align-items: center;
         height: 100%;
         position: absolute;
         overflow: none;
-        animation: ${slideKeyframes} 9s linear forwards;
+        animation: ${slideKeyframes} ${getCardAnimationTime(cardCount)}s linear forwards;
     `;
 };
 
@@ -158,8 +177,8 @@ export const characterImage = (character: string) => {
 };
 
 export const memoryCardImg = () => css`
-    width: 400px;
-    height: 400px;
+    width: 300px;
+    height: 300px;
     margin-left: 100px;
     margin-right: 100px;
 `;
