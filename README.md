@@ -1,27 +1,18 @@
-# react-three-fiber Game Demo
+# Harry Potter and He Who Stole Christmas
 
 ![Game Demo](/media/game-demo.gif)
 
-This repo shows an example implementation of a top-down 2d game made with React and [react-three-fiber](https://github.com/pmndrs/react-three-fiber).
+[Try it out here](https://hp-he-who-stole-christmas.herokuapp.com/)
+# Some Context
+This game was made solely as a joke and part of a Christmas gift for my girlfriend who is a huge Harry Potter fan.  That being said, I did not spend any time testing this on browsers other than Chrome / Safari, and I'm 99% sure it will not run on mobile.  I've also cut a lot of corners in a lot of the implementation details because I only had some hours across ~10 days to work on this before Christmas 😅.
 
-I used the core functionality to create [Colmen's Quest](https://coldigames.itch.io/colmens-quest) and wanted to give you an idea of how a game can be done with React.
+This game is using the engine built by [@coldi](https://github.com/coldi).  I would not have been able to complete this in the short amount of time that I did had it not been for their work, so a huge thanks goes out to them.
 
-This is by no means the best way to build a game, it's just my way. 😊
+Feel free to expand on this and do whatever you'd like with it if you want.  I will not be maintaining this in anyway, but if you have any questions, shoot me an email at **jvasquez864@gmail.com**
 
-**I suggest you use this code as an inspiration and not as a starting point to build your game on top of it. I also do not intend to maintain this code base in any way.**
+# NOTE
+I do not own any of images, sounds, or other assets used for this project
 
 ## Get started
 
-You can start the game by `yarn && yarn start`, then [open your Browser](http://localhost:3000/).
-
-To get a better understanding of the architecture I used, you may want to read [this thread on Twitter](https://twitter.com/coldi/status/1254446313955119104).
-
-I'm happy to answer your specific questions about this demo. Just [@coldi](https://twitter.com/coldi) me. 👋
-
-## Known issues
-
-For this demo I used the current version of Colmen's Quest and stripped everything from it except my core "game engine" files. Some code, especially the player movement, might be buggy because there is no turn-based logic anymore.
-
-I don't use a physics engine and the whole collision and movement logic solely relies on tile positions. Therefore you can only move full tiles in this demo.
-
-There are great libraries like [use-cannon](https://github.com/pmndrs/use-cannon) that enable physics-based collisions with react-three-fiber. Check it out! I would love to hear what you made with it!
+You can start the game by `yarn && yarn watch`, then [open your Browser](http://localhost:3000/).
