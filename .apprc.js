@@ -62,7 +62,7 @@ module.exports = {
                 ],
             },
             plugins: (plugins = []) => {
-                if (config.options.devMode) {
+                if (process.env.NODE_ENV === 'development') {
                     plugins.push(new ReactRefreshPlugin({ disableRefreshCheck: true }));
                 }
                 return plugins;
