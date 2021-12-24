@@ -22,21 +22,17 @@ export const dialogs: { [key: string]: DialogInfo } = {
             },
             {
                 text:
-                    "The good news is we know where he went.  We have reports of him taking refuge on an island where muggles travel to destress.  It's an island known as 'Aruba'",
+                    'The good news is that we have sources that are locating him as we speak, and it should be a matter of time before we have the information necessary to take him down',
                 character: 'dumbledore',
             },
             {
-                text: 'Ahhh rooo bah?',
+                text: "I'm ready now.  I want this to be over.",
                 character: 'harry',
             },
             {
                 text:
-                    'Yes. If we act now, I believe we can finish him off before he has a chance to recover.  Get your essentials ready, Harry.',
+                    "Don't be reckless.  While we locate Voldemort, I know a couple of fantastic young wizards who you would make a great team with.  Contact them as soon as you can and let them know what's going on.  We're going to need all the help we can get.",
                 character: 'dumbledore',
-            },
-            {
-                text: "Let's put an end to this.",
-                character: 'harry',
             },
         ],
     },
